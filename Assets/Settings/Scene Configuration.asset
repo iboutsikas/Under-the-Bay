@@ -1,0 +1,27 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: fb9ef0f62d9cdba47807f0bc308d05b9, type: 3}
+  m_Name: Scene Configuration
+  m_EditorClassIdentifier: 
+  Scenes:
+  - BuildIndex: 1
+    SceneName: Landing Scene
+    LoadingScreen: {fileID: 21300000, guid: 890565035f2e96049bd3259f32bf8162, type: 3}
+    BackgroundColor: {r: 1, g: 0, b: 0.69796467, a: 1}
+  - BuildIndex: 2
+    SceneName: 01 - Origin Story
+    LoadingScreen: {fileID: 21300000, guid: 107a03810f32b8a4cb4c9a08a3ab3c98, type: 3}
+    BackgroundColor: {r: 0, g: 1, b: 0.97032166, a: 1}
+  - BuildIndex: 3
+    SceneName: 02 - Water Flowing
+    LoadingScreen: {fileID: 21300000, guid: 80d5bea64499c6649ac0f14f3ae6751a, type: 3}
+    BackgroundColor: {r: 0.17254902, g: 0.16470589, b: 0.003921569, a: 1}

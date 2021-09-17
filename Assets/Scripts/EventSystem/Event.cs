@@ -35,7 +35,11 @@ namespace UTB.EventSystem
 
             m_HasFired = true;
             if (listeners != null)
+            {
+                //var type = this.GetType();
+                //Debug.Log($"[{type.Name}] Number of listeners: {listeners.GetInvocationList().Length}");
                 listeners(this as T);
+            }
         }
         #endregion
 

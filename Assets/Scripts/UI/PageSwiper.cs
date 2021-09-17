@@ -4,14 +4,9 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
+using UTB.Core;
 using static UTB.EventSystem.InputEvents;
 using static UTB.EventSystem.SceneLoadingEvents;
-
-[Serializable]
-public struct SceneDescription
-{
-    public Sprite LoadingScreen;
-};
 
 namespace UTB.UI
 {
@@ -31,13 +26,22 @@ namespace UTB.UI
         public float ElasticDragThreshold = 0.05f;
 
         public RectTransform Canvas;
-        public List<SceneDescription> Scenes;
+        public SceneConfiguration SceneConfig;
 
 
         private void Awake()
         {
+            Debug.Log("PageSwiper::Awake");
             m_RectTransform = GetComponent<RectTransform>();
             m_Pages = GetComponentsInChildren<Page>();
+        }
+
+        private void Start()
+        {
+            foreach (var page in m_Pages)
+            {
+                page.Resize(Canvas.rect.width, Canvas.rect.height, DeviceOrientation.Unknown);
+            }
 
             HidePages();
         }
@@ -65,9 +69,13 @@ namespace UTB.UI
 
         private void On_OrientationChange(OrientationChangedEvent info)
         {
-            var pos = m_RectTransform.anchoredPosition;
+            Debug.Log($"[PageSwiper] Orientation changed to: {info.NewOrientation}");
+            Debug.Log($"[PageSwiper] Canvas width: {Canvas.rect.width}, Canvas height: {Canvas.rect.height}");
 
-            pos.x = -m_NextScene * Canvas.rect.width;
+            foreach (var page in m_Pages)
+            {
+                page.Resize(Canvas.rect.height, Canvas.rect.width, info.NewOrientation);
+            }
         }
 
         private void ShowPages()
@@ -112,14 +120,14 @@ namespace UTB.UI
             {
                 AdvanceNextScene();
                 m_Pages[0].EnableCaptureScreen(m_CaptureTexture);
-                m_Pages[1].EnableLoadingScreen(Scenes[m_NextScene].LoadingScreen);
+                m_Pages[1].EnableLoadingScreen(SceneConfig.Scenes[m_NextScene]);
 
                 MoveFullRight();
             }
             else
             {
-                RetractNextScene();
-                m_Pages[0].EnableLoadingScreen(Scenes[m_NextScene].LoadingScreen);
+                AdvancePreviousScene();
+                m_Pages[0].EnableLoadingScreen(SceneConfig.Scenes[m_NextScene]);
                 m_Pages[1].EnableCaptureScreen(m_CaptureTexture);
 
                 MoveFullLeft();
@@ -224,16 +232,16 @@ namespace UTB.UI
         void AdvanceNextScene()
         {
             m_NextScene = m_CurrentScene + 1;
-            if (m_NextScene >= Scenes.Count)
+            if (m_NextScene >= SceneConfig.Scenes.Count)
                 m_NextScene = 0;
         }
 
-        void RetractNextScene()
+        void AdvancePreviousScene()
         {
             m_NextScene = m_CurrentScene - 1;
 
             if (m_NextScene < 0)
-                m_NextScene = Scenes.Count - 1;
+                m_NextScene = SceneConfig.Scenes.Count - 1;
         }
 
     }
