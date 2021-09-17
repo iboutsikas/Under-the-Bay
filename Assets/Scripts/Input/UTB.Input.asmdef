@@ -1,0 +1,18 @@
+{
+    "name": "UTB.Input",
+    "rootNamespace": "",
+    "references": [
+        "GUID:31a6caf74e929da44b2b099ada8ce2eb",
+        "GUID:75469ad4d38634e559750d17036d5f7c",
+        "GUID:fc4f0b1791e42ba4192b8178ac4b9fae"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}
