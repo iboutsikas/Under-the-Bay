@@ -29,6 +29,7 @@ namespace UTB.UI
 
         public RectTransform Canvas;
         public SceneConfiguration SceneConfig;
+        public RawImage DebugImage;
 
 
         private void Awake()
@@ -118,14 +119,19 @@ namespace UTB.UI
             
             m_Swiping = true;
 
-            m_CaptureTexture = RenderTexture.GetTemporary(Screen.width, Screen.height);
+            m_CaptureTexture = RenderTexture.GetTemporary(Screen.width, Screen.height, 24);
+
+            Debug.Log($"Screen.width: {Screen.width}, Screen.height: {Screen.height}");
+
+            DebugImage.texture = m_CaptureTexture;
+            DebugImage.uvRect = new Rect() { width = Canvas.rect.width / Screen.width, height = Canvas.rect.height / Screen.height};
 
             ScreenCapture.CaptureScreenshotIntoRenderTexture(m_CaptureTexture);
 
             if (info.Direction.HasFlag(SwipeDirection.LEFT))
             {
                 AdvanceNextScene();
-                m_Pages[0].EnableCaptureScreen(m_CaptureTexture);
+                m_Pages[0].EnableCaptureScreen(m_CaptureTexture, Canvas.rect.width, Canvas.rect.height);
                 m_Pages[1].EnableLoadingScreen(SceneConfig.Scenes[m_NextScene]);
 
                 MoveFullRight();
@@ -134,7 +140,7 @@ namespace UTB.UI
             {
                 AdvancePreviousScene();
                 m_Pages[0].EnableLoadingScreen(SceneConfig.Scenes[m_NextScene]);
-                m_Pages[1].EnableCaptureScreen(m_CaptureTexture);
+                m_Pages[1].EnableCaptureScreen(m_CaptureTexture, Canvas.rect.width, Canvas.rect.height);
 
                 MoveFullLeft();
             }
@@ -171,8 +177,10 @@ namespace UTB.UI
                 info.Direction.HasFlag(SwipeDirection.LEFT) ||
                 info.Direction.HasFlag(SwipeDirection.RIGHT);
 
-            if (!m_Swiping || !isCorrectDirectionSwipe)
+            if (!m_Swiping && !isCorrectDirectionSwipe)
                 return;
+
+            m_Swiping = false;
 
             var pos = m_RectTransform.anchoredPosition;
             var canvasWidth = Canvas.rect.width;
@@ -235,8 +243,11 @@ namespace UTB.UI
 
         private void On_SceneLoaded(SceneLoadedEvent info)
         {
+            //DebugImage.texture = null;
+
             //if (m_CaptureTexture != null)
             //    RenderTexture.ReleaseTemporary(m_CaptureTexture);
+
 
             HidePages();
         }

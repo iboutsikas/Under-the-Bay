@@ -58,10 +58,16 @@ namespace UTB.UI
             m_BackgroundImage.color = sceneDescription.BackgroundColor;
         }
 
-        public void EnableCaptureScreen(RenderTexture texture)
+        public void EnableCaptureScreen(RenderTexture texture, float canvasWidth, float canvasHeight)
         {
             m_RawImage.enabled = true;
             m_RawImage.texture = texture;
+            m_RawImage.uvRect = new Rect() {
+                x       = -0.01f,
+                y       = 0.0f,
+                width   = 1.0f,
+                height  = 1.0f
+            };
             m_LoadingScreenImage.enabled = false;
         }
     }
