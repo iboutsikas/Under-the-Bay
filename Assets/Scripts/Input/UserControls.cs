@@ -22,7 +22,7 @@ public class @UserControls : IInputActionCollection, IDisposable
                     ""name"": ""PrimaryTouch"",
                     ""type"": ""PassThrough"",
                     ""id"": ""d6f95eb7-5303-465a-a3bb-1d18dc8b7dd8"",
-                    ""expectedControlType"": ""Touch"",
+                    ""expectedControlType"": """",
                     ""processors"": """",
                     ""interactions"": """"
                 },
@@ -39,7 +39,7 @@ public class @UserControls : IInputActionCollection, IDisposable
                 {
                     ""name"": """",
                     ""id"": ""41ffd869-f784-4dc3-a346-5e3609bc78e2"",
-                    ""path"": ""<Touchscreen>/primaryTouch/press"",
+                    ""path"": ""<Touchscreen>/touch0/press"",
                     ""interactions"": ""Press"",
                     ""processors"": """",
                     ""groups"": """",

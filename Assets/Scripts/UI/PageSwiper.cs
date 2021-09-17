@@ -14,6 +14,8 @@ namespace UTB.UI
 
     public class PageSwiper : MonoBehaviour
     {
+        private bool m_Swiping = false;
+
         private RectTransform m_RectTransform;
         private Page[] m_Pages;
         private RenderTexture m_CaptureTexture;
@@ -31,7 +33,6 @@ namespace UTB.UI
 
         private void Awake()
         {
-            Debug.Log("PageSwiper::Awake");
             m_RectTransform = GetComponent<RectTransform>();
             m_Pages = GetComponentsInChildren<Page>();
         }
@@ -64,13 +65,12 @@ namespace UTB.UI
             OrientationChangedEvent.Unsubscribe(On_OrientationChange);
 
             SceneLoadedEvent.Unsubscribe(On_SceneLoaded);
-
         }
 
         private void On_OrientationChange(OrientationChangedEvent info)
         {
-            Debug.Log($"[PageSwiper] Orientation changed to: {info.NewOrientation}");
-            Debug.Log($"[PageSwiper] Canvas width: {Canvas.rect.width}, Canvas height: {Canvas.rect.height}");
+            //Debug.Log($"[PageSwiper] Orientation changed to: {info.NewOrientation}");
+            //Debug.Log($"[PageSwiper] Canvas width: {Canvas.rect.width}, Canvas height: {Canvas.rect.height}");
 
             foreach (var page in m_Pages)
             {
@@ -109,8 +109,14 @@ namespace UTB.UI
 
         private void On_SwipeStart(SwipeStartEvent info)
         {
-            if (!info.Direction.HasFlag(SwipeDirection.LEFT) && !info.Direction.HasFlag(SwipeDirection.RIGHT))
+            bool isCorrectDirectionSwipe = 
+                info.Direction.HasFlag(SwipeDirection.LEFT) || 
+                info.Direction.HasFlag(SwipeDirection.RIGHT);
+            
+            if (m_Swiping || !isCorrectDirectionSwipe)
                 return;
+            
+            m_Swiping = true;
 
             m_CaptureTexture = RenderTexture.GetTemporary(Screen.width, Screen.height);
 
@@ -131,7 +137,6 @@ namespace UTB.UI
                 m_Pages[1].EnableCaptureScreen(m_CaptureTexture);
 
                 MoveFullLeft();
-
             }
 
             ShowPages();
@@ -139,6 +144,9 @@ namespace UTB.UI
 
         private void On_SwipeProgress(SwipeProgressEvent evt)
         {
+            if (!m_Swiping)
+                return;
+
             var pos = m_RectTransform.anchoredPosition;
             pos.x += evt.Delta.x;
 
@@ -159,7 +167,11 @@ namespace UTB.UI
 
         private void On_SwipeEnd(SwipeEndEvent info)
         {
-            if (!info.Direction.HasFlag(SwipeDirection.LEFT) && !info.Direction.HasFlag(SwipeDirection.RIGHT))
+            bool isCorrectDirectionSwipe =
+                info.Direction.HasFlag(SwipeDirection.LEFT) ||
+                info.Direction.HasFlag(SwipeDirection.RIGHT);
+
+            if (!m_Swiping || !isCorrectDirectionSwipe)
                 return;
 
             var pos = m_RectTransform.anchoredPosition;

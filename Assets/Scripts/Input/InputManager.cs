@@ -2,6 +2,9 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.InputSystem;
+using UnityEngine.InputSystem.EnhancedTouch;
+
+using ETouch = UnityEngine.InputSystem.EnhancedTouch.Touch;
 using static UTB.EventSystem.InputEvents;
 
 namespace UTB.Input
@@ -11,8 +14,6 @@ namespace UTB.Input
     [DefaultExecutionOrder(-1)]
     public class InputManager : MonoBehaviourSingletonPersistent<InputManager>
     {
-        // We need to ignore the first even for now, as it always starts at (0, 0) which is wrong
-        private bool m_IsFirstEvent = true;
         [SerializeField]
         private UserControls m_UserControls;
         [SerializeField]
@@ -134,6 +135,8 @@ namespace UTB.Input
                     {
                         SwipeStartEvent evt = new SwipeStartEvent();
 
+                        Debug.Log($"[InputManager]: Starting swipe event at {m_StartPosition}");
+
                         evt.StartPosition = m_StartPosition;
                         evt.Direction = direction;
                         //Debug.Log($"Starting {direction} swipe");
@@ -161,15 +164,25 @@ namespace UTB.Input
 
         private void PrimaryTouch_started(InputAction.CallbackContext ctx)
         {
+            Debug.Log($"[InputManager] Touch start from Actions");
+
             Vector2 currentPosition = m_UserControls.Touch.PrimaryPosition.ReadValue<Vector2>();
 
             // If this is the first event we need to go from the touchscreen legacy control
             // as the new input system is bugged and will always return the first touch at (0, 0)
-            if (m_IsFirstEvent)
-            {
-                currentPosition = Touchscreen.current.primaryTouch.position.ReadValue();
-                m_IsFirstEvent = false;
-            }
+            //if (m_IsFirstEvent)
+            //{
+            //    if (ETouch.activeTouches.Count > 0)
+            //    {
+            //        currentPosition = ETouch.activeTouches[0].screenPosition;
+            //    }
+            //    else
+            //    {
+            //        Debug.Log("[InputManager] Expected at least one touch to be active!");
+            //    }
+            //    m_IsFirstEvent = false;
+            //    Debug.Log($"[InputManager] Changing tap position to {currentPosition}");
+            //}
 
             m_StartPosition = currentPosition;
             m_LastPosition = currentPosition;
@@ -222,7 +235,13 @@ namespace UTB.Input
 
         private void DetectSwipe(Vector2 endPosition)
         {
-            if (Vector2.Distance(endPosition, m_StartPosition) < m_SwipeThreshold)
+            /**
+             * We always want to detect a swipe end if we have already started swiping.
+             * For instance if the user starts a swipe left, goes all the way left and 
+             * back to the starting position we want to let the system know that the 
+             * swipe ended. Even if distance is bellow the threshold
+             */
+            if (!m_Swiping && Vector2.Distance(endPosition, m_StartPosition) < m_SwipeThreshold )
                 return;
 
             // There was a swipe
@@ -234,7 +253,7 @@ namespace UTB.Input
             var direction = swipeEvt.Delta.normalized;
 
             swipeEvt.Direction = GetSwipeDirection(direction);
-            //Debug.Log($"Finished {swipeEvt.Direction} swipe");
+            Debug.Log($"[InputManager]: Ending {swipeEvt.Direction} swipe event from {m_StartPosition} to {endPosition}");
 
             swipeEvt.Fire();
         }
