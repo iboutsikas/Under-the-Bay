@@ -10,6 +10,7 @@ namespace UTB.UI
     public class Page : MonoBehaviour
     {
         private LayoutElement m_LayoutElement;
+        private CanvasGroup m_CanvasGroup;
 
         [SerializeField]
         private Image m_BackgroundImage;
@@ -23,6 +24,8 @@ namespace UTB.UI
             Debug.Log("Page::Awake"); 
             m_LayoutElement = GetComponent<LayoutElement>();
             Assert.IsNotNull(m_LayoutElement);
+            m_CanvasGroup = GetComponent<CanvasGroup>();
+            Assert.IsNotNull(m_CanvasGroup);
         }
 
         void Start()
@@ -48,6 +51,26 @@ namespace UTB.UI
             {
                 m_LayoutElement.minWidth = newWidth;
             }
+        }
+
+        public void FadeOut()
+        {
+            LeanTween.alphaCanvas(m_CanvasGroup, 0.0f, 0.5f)
+                .setOnComplete(() =>
+                {
+                    this.gameObject.SetActive(false);
+                });
+        }   
+
+        public void Hide()
+        {
+            this.gameObject.SetActive(false);
+        }
+
+        public void Show()
+        {
+            m_CanvasGroup.alpha = 1.0f;
+            this.gameObject.SetActive(true);
         }
 
         public void EnableLoadingScreen(SceneDescription sceneDescription)

@@ -15,12 +15,17 @@ namespace UTB.UI
     public class PageSwiper : MonoBehaviour
     {
         private bool m_Swiping = false;
+        private bool m_WaitingForLoad = false;
+        private bool m_WaitingForFade = false;
 
         private RectTransform m_RectTransform;
         private Page[] m_Pages;
         private RenderTexture m_CaptureTexture;
         private int m_CurrentScene = 0;
         private int m_NextScene = 1;
+
+        [SerializeField]
+        private float m_FadeoutDelay = 1.0f;
 
         [Range(0, 1)]
         public float PercentThreshold = 0.8f;
@@ -29,7 +34,6 @@ namespace UTB.UI
 
         public RectTransform Canvas;
         public SceneConfiguration SceneConfig;
-        public RawImage DebugImage;
 
 
         private void Awake()
@@ -81,17 +85,25 @@ namespace UTB.UI
 
         private void ShowPages()
         {
-            foreach (var image in m_Pages)
+            foreach (var page in m_Pages)
             {
-                image.gameObject.SetActive(true);
+                page.Show();
             }
         }
 
         private void HidePages()
         {
-            foreach (var image in m_Pages)
+            foreach (var page in m_Pages)
             {
-                image.gameObject.SetActive(false);
+                page.Hide();
+            }
+        }
+
+        private void FadeoutPages()
+        {
+            foreach(var page in m_Pages)
+            {
+                page.FadeOut();
             }
         }
 
@@ -122,9 +134,6 @@ namespace UTB.UI
             m_CaptureTexture = RenderTexture.GetTemporary(Screen.width, Screen.height, 24);
 
             Debug.Log($"Screen.width: {Screen.width}, Screen.height: {Screen.height}");
-
-            DebugImage.texture = m_CaptureTexture;
-            DebugImage.uvRect = new Rect() { width = Canvas.rect.width / Screen.width, height = Canvas.rect.height / Screen.height};
 
             ScreenCapture.CaptureScreenshotIntoRenderTexture(m_CaptureTexture);
 
@@ -229,10 +238,15 @@ namespace UTB.UI
 
             if (swappedLoadingScreen)
             {
+                m_WaitingForLoad = true;
+
                 RequestSceneLoadEvent loadEvt = new RequestSceneLoadEvent();
                 loadEvt.SceneIndex = m_NextScene + 1;
                 loadEvt.Fire();
                 m_CurrentScene = m_NextScene;
+
+
+                StartFadeoutTimer();
             }
             else
             {
@@ -243,13 +257,13 @@ namespace UTB.UI
 
         private void On_SceneLoaded(SceneLoadedEvent info)
         {
-            //DebugImage.texture = null;
+            m_WaitingForLoad = false;
 
-            //if (m_CaptureTexture != null)
-            //    RenderTexture.ReleaseTemporary(m_CaptureTexture);
-
-
-            HidePages();
+            if (m_CaptureTexture != null)
+                RenderTexture.ReleaseTemporary(m_CaptureTexture);
+            
+            if (!m_WaitingForFade)
+                FadeoutPages();
         }
 
         void AdvanceNextScene()
@@ -265,6 +279,22 @@ namespace UTB.UI
 
             if (m_NextScene < 0)
                 m_NextScene = SceneConfig.Scenes.Count - 1;
+        }
+
+        void StartFadeoutTimer()
+        {
+            m_WaitingForFade = true;
+            StartCoroutine(fadeOut());
+        }
+
+        IEnumerator fadeOut()
+        {
+            yield return new WaitForSeconds(m_FadeoutDelay);
+            
+            m_WaitingForFade = false;
+
+            if (!m_WaitingForLoad)
+                FadeoutPages();
         }
 
     }

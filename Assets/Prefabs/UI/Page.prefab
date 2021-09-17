@@ -176,6 +176,7 @@ GameObject:
   - component: {fileID: 8390464168268768670}
   - component: {fileID: 8390464168268768671}
   - component: {fileID: 8390464168268768668}
+  - component: {fileID: 834736152856696525}
   m_Layer: 5
   m_Name: Page
   m_TagString: Untagged
@@ -246,6 +247,18 @@ MonoBehaviour:
   m_BackgroundImage: {fileID: 5105503100890121356}
   m_LoadingScreenImage: {fileID: 8390464168492369774}
   m_RawImage: {fileID: 8390464167923165006}
+--- !u!225 &834736152856696525
+CanvasGroup:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8390464168268768659}
+  m_Enabled: 1
+  m_Alpha: 1
+  m_Interactable: 1
+  m_BlocksRaycasts: 1
+  m_IgnoreParentGroups: 0
 --- !u!1 &8390464168492369760
 GameObject:
   m_ObjectHideFlags: 0
