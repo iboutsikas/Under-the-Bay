@@ -34,6 +34,9 @@ namespace UTB.Input
 
         private Vector2 m_LastPosition;
 
+
+        public DeviceOrientation DeviceOrientation => m_DeviceOrientation;
+
         public override void Awake()
         {
             base.Awake();
@@ -57,6 +60,13 @@ namespace UTB.Input
 
             m_UserControls.Touch.PrimaryTouch.started += PrimaryTouch_started;
             m_UserControls.Touch.PrimaryTouch.canceled += PrimaryTouch_canceled;
+
+            m_DeviceOrientation = UnityEngine.Input.deviceOrientation;
+            
+            OrientationChangedEvent evt = new OrientationChangedEvent();
+            evt.OldOrientation = DeviceOrientation.Unknown;
+            evt.NewOrientation = m_DeviceOrientation;
+            evt.Fire();
         }
 
         private void OnDestroy()
@@ -71,6 +81,7 @@ namespace UTB.Input
             {
                 return;
             }
+
             SwipeProgressEvent evt = new SwipeProgressEvent();
             evt.StartPosition = m_StartPosition;
             evt.Position = currentPosition;
@@ -132,33 +143,42 @@ namespace UTB.Input
                 }
             }
 
-            if (m_DeviceOrientation != UnityEngine.Input.deviceOrientation)
+            var currentOrientation = UnityEngine.Input.deviceOrientation;
+            if (m_DeviceOrientation != currentOrientation)
             {
-                OrientationChangedEvent evt = new OrientationChangedEvent();
-                evt.OldOrientation = m_DeviceOrientation;
-                evt.NewOrientation = UnityEngine.Input.deviceOrientation;
-                evt.Fire();
+                var oldOrientation = m_DeviceOrientation;
+                m_DeviceOrientation = currentOrientation;
 
-                m_DeviceOrientation = UnityEngine.Input.deviceOrientation;
+                Debug.Log($"[InputManager]: Orientation changed from {oldOrientation} to {currentOrientation}");
+                
+                
+                OrientationChangedEvent evt = new OrientationChangedEvent();
+                evt.OldOrientation = oldOrientation;
+                evt.NewOrientation = currentOrientation;                
+                evt.Fire();
             }
         }
 
         private void PrimaryTouch_started(InputAction.CallbackContext ctx)
         {
+            Vector2 currentPosition = m_UserControls.Touch.PrimaryPosition.ReadValue<Vector2>();
+
+            // If this is the first event we need to go from the touchscreen legacy control
+            // as the new input system is bugged and will always return the first touch at (0, 0)
             if (m_IsFirstEvent)
             {
+                currentPosition = Touchscreen.current.primaryTouch.position.ReadValue();
                 m_IsFirstEvent = false;
-                return;
             }
 
-            StartTouchEvent evt = new StartTouchEvent();
-            evt.Position = m_UserControls.Touch.PrimaryPosition.ReadValue<Vector2>();
-            evt.Time = (float)ctx.time;
-            evt.Fire();
-
-            m_StartPosition = evt.Position;
-            m_LastPosition = evt.Position;
+            m_StartPosition = currentPosition;
+            m_LastPosition = currentPosition;
             m_Holding = true;
+
+            StartTouchEvent evt = new StartTouchEvent();
+            evt.Position = currentPosition;
+            evt.Time = (float)ctx.time;
+            evt.Fire();            
         }
 
         private void PrimaryTouch_canceled(InputAction.CallbackContext ctx)
