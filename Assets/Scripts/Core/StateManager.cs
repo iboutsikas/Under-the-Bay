@@ -44,6 +44,7 @@ namespace UTB.Core
             m_CurrentSceneIndex = scene.buildIndex;
 
             SceneLoadedEvent evt = new SceneLoadedEvent();
+            evt.BuildIndex = m_CurrentSceneIndex;
 
             evt.Fire();
         }

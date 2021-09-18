@@ -10,8 +10,6 @@ using static UTB.EventSystem.SceneLoadingEvents;
 
 namespace UTB.UI
 {
-
-
     public class PageSwiper : MonoBehaviour
     {
         private bool m_Swiping = false;
@@ -26,6 +24,10 @@ namespace UTB.UI
 
         [SerializeField]
         private float m_FadeoutDelay = 1.0f;
+        [SerializeField]
+        private float m_SlideDuration = 1.0f;
+        [SerializeField]
+        private LeanTweenType m_SlideEaseType;
 
         [Range(0, 1)]
         public float PercentThreshold = 0.8f;
@@ -126,7 +128,7 @@ namespace UTB.UI
                 info.Direction.HasFlag(SwipeDirection.LEFT) || 
                 info.Direction.HasFlag(SwipeDirection.RIGHT);
             
-            if (m_Swiping || !isCorrectDirectionSwipe)
+            if (m_Swiping || !isCorrectDirectionSwipe || m_WaitingForFade || m_WaitingForLoad)
                 return;
             
             m_Swiping = true;
@@ -197,7 +199,7 @@ namespace UTB.UI
             float difference = (info.StartPosition - info.Position).x;
 
             // Takes a value from -1, 0 basically, so we need to clamp it next
-            int screenOffsetCount = (int)(pos.x / canvasWidth);
+            int screenOffsetCount = Mathf.RoundToInt(pos.x / canvasWidth);
 
             if (screenOffsetCount <= -m_Pages.Length)
             {
@@ -211,47 +213,39 @@ namespace UTB.UI
 
             float pctMoved = Mathf.Abs(difference / canvasWidth);
 
-            bool swappedLoadingScreen = false;
+            bool swappedLoadingScreen = pctMoved >= PercentThreshold;
 
-            if (info.Direction.HasFlag(SwipeDirection.LEFT))
-            {
-                if (pctMoved >= PercentThreshold)
-                {
-                    screenOffsetCount -= 1;
-                    swappedLoadingScreen = true;
-                }
-            }
-            else if (info.Direction.HasFlag(SwipeDirection.RIGHT))
-            {
-                if (pctMoved >= PercentThreshold)
-                {
-                    swappedLoadingScreen = true;
-                }
-            }
 
             pos.x = screenOffsetCount * canvasWidth;
 
             if (pos.x > 0.0f)
                 pos.x = 0.0f;
 
-            m_RectTransform.anchoredPosition = pos;
+            // NOTE: on complete will activate at a later point
+            // probably after the load has been requested
+            LeanTween.move(m_RectTransform, pos, m_SlideDuration)
+                .setEase(m_SlideEaseType)
+                .setOnComplete(() =>
+                {
+                    if (swappedLoadingScreen)
+                        StartFadeoutTimer();
+                    else
+                        HidePages();
+                });
 
             if (swappedLoadingScreen)
             {
                 m_WaitingForLoad = true;
+                m_WaitingForFade = true;
 
                 RequestSceneLoadEvent loadEvt = new RequestSceneLoadEvent();
-                loadEvt.SceneIndex = m_NextScene + 1;
+                loadEvt.SceneIndex = SceneConfig.Scenes[m_NextScene].BuildIndex;
                 loadEvt.Fire();
                 m_CurrentScene = m_NextScene;
-
-
-                StartFadeoutTimer();
             }
             else
             {
                 m_NextScene = m_CurrentScene;
-                HidePages();
             }
         }
 
@@ -261,6 +255,16 @@ namespace UTB.UI
 
             if (m_CaptureTexture != null)
                 RenderTexture.ReleaseTemporary(m_CaptureTexture);
+
+            // Update the scene to whatever was loaded
+            for(int i = 0; i < SceneConfig.Scenes.Count; ++i)
+            {
+                if (SceneConfig.Scenes[i].BuildIndex == info.BuildIndex)
+                {
+                    m_CurrentScene = i;
+                    break;
+                }
+            }
             
             if (!m_WaitingForFade)
                 FadeoutPages();
@@ -276,7 +280,6 @@ namespace UTB.UI
         void AdvancePreviousScene()
         {
             m_NextScene = m_CurrentScene - 1;
-
             if (m_NextScene < 0)
                 m_NextScene = SceneConfig.Scenes.Count - 1;
         }

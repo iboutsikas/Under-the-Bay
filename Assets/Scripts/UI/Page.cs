@@ -13,6 +13,8 @@ namespace UTB.UI
         private CanvasGroup m_CanvasGroup;
 
         [SerializeField]
+        private float m_FadeDuration = 0.3f;
+        [SerializeField]
         private Image m_BackgroundImage;
         [SerializeField]
         private Image m_LoadingScreenImage;
@@ -55,7 +57,7 @@ namespace UTB.UI
 
         public void FadeOut()
         {
-            LeanTween.alphaCanvas(m_CanvasGroup, 0.0f, 0.5f)
+            LeanTween.alphaCanvas(m_CanvasGroup, 0.0f, m_FadeDuration)
                 .setOnComplete(() =>
                 {
                     this.gameObject.SetActive(false);

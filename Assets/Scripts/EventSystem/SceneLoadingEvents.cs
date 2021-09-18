@@ -14,7 +14,7 @@ namespace UTB.EventSystem
 
         public class SceneLoadedEvent : Event<SceneLoadedEvent>
         {
-
+            public int BuildIndex;
         }
     }
 }
