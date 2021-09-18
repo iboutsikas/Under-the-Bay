@@ -42,7 +42,8 @@ public class MonoBehaviourSingletonPersistent<T> : MonoBehaviour
         if (Instance == null)
         {
             Instance = this as T;
-            DontDestroyOnLoad(this);
+            if (Application.isPlaying)
+                DontDestroyOnLoad(this);
         }
         else
         {
