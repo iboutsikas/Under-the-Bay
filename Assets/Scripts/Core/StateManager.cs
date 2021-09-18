@@ -1,11 +1,18 @@
+using System;
+using UnityEngine;
 using UnityEngine.SceneManagement;
 using static UTB.EventSystem.SceneLoadingEvents;
+using static UTB.EventSystem.DataEvents;
 
 namespace UTB.Core
 {
     public class StateManager : MonoBehaviourSingletonPersistent<StateManager>
     {
         private int m_CurrentSceneIndex = -1;
+
+        public DateTimeOffset? FromDate;
+        public DateTimeOffset? ToDate;
+
         public override void Awake()
         {
             base.Awake();
@@ -15,14 +22,20 @@ namespace UTB.Core
         private void OnEnable()
         {
             RequestSceneLoadEvent.Subscribe(On_SceneLoadRequested);
+            SampleDatesChangedEvent.Subscribe(On_SampleDatesChanged);
+
             SceneManager.sceneLoaded += SceneManager_sceneLoaded;
         }
 
         private void OnDisable()
         {
             RequestSceneLoadEvent.Unsubscribe(On_SceneLoadRequested);
+            SampleDatesChangedEvent.Unsubscribe(On_SampleDatesChanged);
+
             SceneManager.sceneLoaded -= SceneManager_sceneLoaded;
         }
+
+        
 
         private void Start()
         {
@@ -37,6 +50,15 @@ namespace UTB.Core
             LoadSceneMode mode = info.IsAdditive ? LoadSceneMode.Additive : LoadSceneMode.Single;
 
             SceneManager.LoadSceneAsync(info.SceneIndex, mode);
+        }
+
+        private void On_SampleDatesChanged(SampleDatesChangedEvent info)
+        {
+            if (info.From.HasValue)
+                FromDate = info.From.Value;
+
+            if (info.To.HasValue)
+                ToDate = info.To.Value;
         }
 
         private void SceneManager_sceneLoaded(Scene scene, LoadSceneMode mode)

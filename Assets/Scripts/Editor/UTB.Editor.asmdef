@@ -2,7 +2,10 @@
     "name": "UTB.Editor",
     "rootNamespace": "",
     "references": [
-        "GUID:990fe11a18fd5a840a7c5c7e6b87916b"
+        "GUID:990fe11a18fd5a840a7c5c7e6b87916b",
+        "GUID:cafc18317b3e90644a4aab7f019bc023",
+        "GUID:31a6caf74e929da44b2b099ada8ce2eb",
+        "GUID:fc4f0b1791e42ba4192b8178ac4b9fae"
     ],
     "includePlatforms": [],
     "excludePlatforms": [
