@@ -1,6 +1,6 @@
 {
     "name": "UTB.UI",
-    "rootNamespace": "",
+    "rootNamespace": "UTB.UI",
     "references": [
         "GUID:31a6caf74e929da44b2b099ada8ce2eb",
         "GUID:fc4f0b1791e42ba4192b8178ac4b9fae",

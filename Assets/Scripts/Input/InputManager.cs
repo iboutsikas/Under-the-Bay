@@ -152,7 +152,7 @@ namespace UTB.Input
                 var oldOrientation = m_DeviceOrientation;
                 m_DeviceOrientation = currentOrientation;
 
-                Debug.Log($"[InputManager]: Orientation changed from {oldOrientation} to {currentOrientation}");
+                //Debug.Log($"[InputManager]: Orientation changed from {oldOrientation} to {currentOrientation}");
                 
                 
                 OrientationChangedEvent evt = new OrientationChangedEvent();
@@ -164,7 +164,7 @@ namespace UTB.Input
 
         private void PrimaryTouch_started(InputAction.CallbackContext ctx)
         {
-            Debug.Log($"[InputManager] Touch start from Actions");
+            //Debug.Log($"[InputManager] Touch start from Actions");
 
             Vector2 currentPosition = m_UserControls.Touch.PrimaryPosition.ReadValue<Vector2>();
 
