@@ -32,13 +32,19 @@ public class UnderTheBayWindow : EditorWindow
     {
         StationsLoadedEvent.Subscribe(On_StationsLoaded);
         SampleDatesChangedEvent.Subscribe(On_SampleDatesChanged);
-    }
+
+        ActiveStationChangedEvent.Subscribe(On_ActiveStationsChanged);
+    }        
 
     private void OnDestroy()
     {
         StationsLoadedEvent.Unsubscribe(On_StationsLoaded);
         SampleDatesChangedEvent.Subscribe(On_SampleDatesChanged);
+
+        ActiveStationChangedEvent.Unsubscribe(On_ActiveStationsChanged);
     }
+
+
 
 
 
@@ -50,6 +56,8 @@ public class UnderTheBayWindow : EditorWindow
             var window = GetWindow<UnderTheBayWindow>(true, "Under the Bay Data stream", false);
             StationsLoadedEvent.Subscribe(window.On_StationsLoaded);
             SampleDatesChangedEvent.Subscribe(window.On_SampleDatesChanged);
+
+            ActiveStationChangedEvent.Subscribe(window.On_ActiveStationsChanged);
         }
 
         RequestLoadStationsEvent evt = new RequestLoadStationsEvent();
@@ -279,5 +287,10 @@ HandleUpdates:
             toDate = info.To;
             toDateString = toDate.Value.ToString("yyyy-MM-ddTHH:mm:sszzzz");
         }
+    }
+
+    private void On_ActiveStationsChanged(ActiveStationChangedEvent info)
+    {
+        selectedStation = info.Index;
     }
 }

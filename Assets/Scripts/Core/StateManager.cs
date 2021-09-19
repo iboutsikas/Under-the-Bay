@@ -39,7 +39,7 @@ namespace UTB.Core
 
         private void Start()
         {
-            SceneManager.LoadSceneAsync(1, LoadSceneMode.Additive);
+            //SceneManager.LoadSceneAsync(1, LoadSceneMode.Additive);
         }
 
         private void On_SceneLoadRequested(RequestSceneLoadEvent info)

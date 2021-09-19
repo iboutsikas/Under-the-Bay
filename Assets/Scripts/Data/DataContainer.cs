@@ -147,10 +147,29 @@ namespace UTB.Data
 
             m_CurrentStation.LastAttempt = DateTimeOffset.Now;
 
+            DateTimeOffset? from;
+            DateTimeOffset? to;
+
+#if UNITY_EDITOR
+            if (Application.isPlaying)
+            {
+                from = StateManager.Instance.FromDate.HasValue ? StateManager.Instance.FromDate : m_CurrentStation.LastUpdate;
+                to = StateManager.Instance.ToDate.HasValue ? StateManager.Instance.ToDate : DateTimeOffset.Now;
+            }
+            else
+            {
+                from = m_FromDate.HasValue ? m_FromDate : m_CurrentStation.LastUpdate;
+                to = m_ToDate.HasValue ? m_ToDate : DateTimeOffset.Now;
+            }
+#else
+            from = StateManager.Instance.FromDate.HasValue ? StateManager.Instance.FromDate : m_CurrentStation.LastUpdate;
+            to = StateManager.Instance.ToDate.HasValue ? StateManager.Instance.ToDate : DateTimeOffset.Now;
+#endif
+
             RequestLoadSamplesEvent samplesLoadEvt = new RequestLoadSamplesEvent();
             samplesLoadEvt.StationId = m_CurrentStation.Id;
-            samplesLoadEvt.From = info.From.HasValue ? info.From.Value : m_CurrentStation.LastUpdate;
-            samplesLoadEvt.To = info.To.HasValue ? info.To.Value : DateTimeOffset.Now;
+            samplesLoadEvt.From = from;
+            samplesLoadEvt.To = to;
             samplesLoadEvt.Fire();          
         }
 
