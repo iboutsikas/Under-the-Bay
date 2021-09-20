@@ -222,6 +222,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: 02 - Water Moving
       objectReference: {fileID: 0}
+    - target: {fileID: 8410215845480828267, guid: 60da59db0618d2647bf9d22a20d06c17, type: 3}
+      propertyPath: m_SpriteState.m_PressedSprite
+      value: 
+      objectReference: {fileID: 21300000, guid: 9720a3665cab2174895d022dbbd58f05, type: 3}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 60da59db0618d2647bf9d22a20d06c17, type: 3}
 --- !u!224 &182500048 stripped
@@ -519,6 +523,10 @@ PrefabInstance:
       propertyPath: m_Sprite
       value: 
       objectReference: {fileID: 21300000, guid: 8ee4d3bc066e8b04481433db4490707f, type: 3}
+    - target: {fileID: 8410215845480828267, guid: 60da59db0618d2647bf9d22a20d06c17, type: 3}
+      propertyPath: m_SpriteState.m_PressedSprite
+      value: 
+      objectReference: {fileID: 21300000, guid: 1e7987eef5326204387219949b9c037f, type: 3}
     - target: {fileID: 8510990015830950678, guid: 60da59db0618d2647bf9d22a20d06c17, type: 3}
       propertyPath: m_text
       value: System
@@ -1354,6 +1362,10 @@ PrefabInstance:
       propertyPath: m_Sprite
       value: 
       objectReference: {fileID: 21300000, guid: 6277405051e208d4dac8d89ac37d398b, type: 3}
+    - target: {fileID: 8410215845480828267, guid: 60da59db0618d2647bf9d22a20d06c17, type: 3}
+      propertyPath: m_SpriteState.m_PressedSprite
+      value: 
+      objectReference: {fileID: 21300000, guid: 020507f610c96534491b9d3a01d9d416, type: 3}
     - target: {fileID: 8510990015830950678, guid: 60da59db0618d2647bf9d22a20d06c17, type: 3}
       propertyPath: m_text
       value: Chalky faeries
@@ -1654,7 +1666,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   animationTime: 0.5
   TweenType: 0
-  OriginalY: 0
+  OriginalY: -50
   HiddenY: -644
   SceneConfig: {fileID: 11400000, guid: c30f40a9e06a3314798d2569153e648a, type: 2}
   SceneChangingButtons:

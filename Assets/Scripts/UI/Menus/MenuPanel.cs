@@ -24,7 +24,7 @@ namespace UTB.UI
         {
             m_RectTransform = GetComponent<RectTransform>();
             m_RectTransform.anchoredPosition = new Vector2(0, HiddenY);
-
+            
             m_IsOpen = false;
             gameObject.SetActive(false);
         }
@@ -35,6 +35,7 @@ namespace UTB.UI
 
             LeanTween.move(m_RectTransform, new Vector2(0.0f, OriginalY), animationTime)
                 .setEase(TweenType);
+            //m_RectTransform.rect.bottom = 0;
             m_IsOpen = true;
         }
 
