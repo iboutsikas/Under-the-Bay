@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Timers;
 using UnityEngine;
 using UTB.Core;
+using System.Linq;
 #if UNITY_EDITOR
 using UnityEditor;
 #endif
@@ -13,16 +14,14 @@ namespace UTB.Data
 {
     public class DataContainer : ScriptableObjectSingleton<DataContainer>
     {
-#if UNITY_EDITOR
-        // We do not need these outside the editor. During runtime we should be just grabbing the
-        // values from the state manager
-        private DateTimeOffset? m_FromDate;
-        private DateTimeOffset? m_ToDate;
-#endif
-
-
         [SerializeReference]
         private StationService m_StationService;
+
+        [SerializeField]
+        private StationConfiguration m_StationConfig;
+
+        [SerializeField]
+        private SystemSettings m_SystemSettings;
 
         private TimeSpan m_UpdateFrequency;
         private Timer m_Timer;
@@ -30,15 +29,23 @@ namespace UTB.Data
         private List<Station> m_Stations;
         [NonSerialized]
         private List<BayData> m_Samples;
-        [NonSerialized]
-        private Station m_CurrentStation;
+        
 
         public float UpdateInterval = 15.0f;
 
+        [NonSerialized]
+        private Station m_CurrentStation;
         public Station CurrentStation {
             get { return m_CurrentStation; } 
             private set {
-                m_CurrentStation = value; 
+                Debug.Assert(value != null, "Set CurrentStation to null");
+                if (value == null) return;
+                
+                m_CurrentStation = value;
+
+                ActiveStationChangedEvent evt = new ActiveStationChangedEvent();
+                evt.Guid = m_CurrentStation.Id;
+                evt.Fire();
             }
         }
 
@@ -67,6 +74,23 @@ namespace UTB.Data
             m_Timer.Start();
         }
 
+        public void SelectDefaultStation()
+        {
+            foreach (var desc in m_StationConfig.Stations)
+            {
+                if (desc.IsDefaultStation)
+                {
+                    var temp = m_Stations.Find(s => s.Name == desc.StationName);
+
+                    if (temp != null)
+                    {
+                        CurrentStation = temp;
+                    }
+                    break;
+                }
+            }
+        }
+
 #if UNITY_EDITOR
         [InitializeOnLoadMethod]
 #endif
@@ -77,18 +101,15 @@ namespace UTB.Data
         {
             base.OnEnable();
 
+            m_StationConfig = Resources.Load<StationConfiguration>("Station Configuration");
+            m_SystemSettings = Resources.Load<SystemSettings>("System Settings");
+
             RequestLoadStationsEvent.Subscribe(On_LoadStationsRequested);
             SelectActiveStationEvent.Subscribe(On_SelectActiveStation);
+            ActiveStationChangedEvent.Subscribe(On_ActiveStationChanged);
 
             RequestLoadSamplesEvent.Subscribe(On_LoadSamplesRequested);
             SelectActiveSampleEvent.Subscribe(On_SelectActiveSample);
-
-#if UNITY_EDITOR
-            if (!Application.isPlaying)
-            {
-                SampleDatesChangedEvent.Subscribe(On_SampleDatesChanged);
-            }
-#endif
 
             RequestLoadStationsEvent evt = new RequestLoadStationsEvent();
             evt.Fire();
@@ -98,26 +119,18 @@ namespace UTB.Data
         {
             RequestLoadStationsEvent.Unsubscribe(On_LoadStationsRequested);
             SelectActiveStationEvent.Unsubscribe(On_SelectActiveStation);
+            ActiveStationChangedEvent.Unsubscribe(On_ActiveStationChanged);
 
             RequestLoadSamplesEvent.Unsubscribe(On_LoadSamplesRequested);
             SelectActiveSampleEvent.Unsubscribe(On_SelectActiveSample);
-
-#if UNITY_EDITOR
-            if (!Application.isPlaying)
-            {
-                SampleDatesChangedEvent.Unsubscribe(On_SampleDatesChanged);
-            }
-#endif
-
         }
+
 
         private void On_LoadStationsRequested(RequestLoadStationsEvent info)
         {
             try
             {
                 m_Stations = m_StationService.GetAllStations();
-                m_CurrentStation = m_Stations[0];
-
                 // This way we only fire the event if everything went ok
                 StationsLoadedEvent evt = new StationsLoadedEvent();
                 evt.Fire();
@@ -126,25 +139,35 @@ namespace UTB.Data
             {
                 Debug.Log($"[DataContainer] Error while trying to fetch stations: {e.Message}");
             }
+
+            if (CurrentStation == null)
+            {
+                SelectDefaultStation();
+            }
+            else
+            {
+                Debug.Assert(CurrentStation.Id != Guid.Empty);
+                CurrentStation = m_Stations.Find(s => s.Id == m_CurrentStation.Id);
+            }
         }
 
         private void On_SelectActiveStation(SelectActiveStationEvent info)
-        {
-            if (info.Index >= m_Stations.Count)
+        { 
+            if (info.Guid == Guid.Empty)
+            {
+                Debug.LogWarning("We tried to select a station with an empty guid");
+                return;
+            }
+
+            if (info.Guid == CurrentStation.Id)
                 return;
 
-            var newStation = m_Stations[info.Index];
+            var newStation = m_Stations.FirstOrDefault(s => s.Id == info.Guid);
+            
+            if (newStation != null)
+                CurrentStation = newStation;
 
-            if (newStation.Id == m_CurrentStation?.Id)
-                return;
-
-            m_CurrentStation = newStation;
-
-            ActiveStationChangedEvent stationLoadedEvt = new ActiveStationChangedEvent();
-            stationLoadedEvt.Index = info.Index;
-            stationLoadedEvt.Guid = m_CurrentStation.Id;
-            stationLoadedEvt.Fire();
-
+#if false
             m_CurrentStation.LastAttempt = DateTimeOffset.Now;
 
             DateTimeOffset? from;
@@ -170,7 +193,13 @@ namespace UTB.Data
             samplesLoadEvt.StationId = m_CurrentStation.Id;
             samplesLoadEvt.From = from;
             samplesLoadEvt.To = to;
-            samplesLoadEvt.Fire();          
+            samplesLoadEvt.Fire();    
+#endif            
+        }
+
+        private void On_ActiveStationChanged(ActiveStationChangedEvent info)
+        {
+            
         }
 
         private void On_LoadSamplesRequested(RequestLoadSamplesEvent info)
@@ -188,8 +217,33 @@ namespace UTB.Data
 
             try
             {
-                var from = info.From.HasValue ? info.From.Value : m_CurrentStation.LastUpdate;
-                var to = info.To.HasValue ? info.To.Value : DateTimeOffset.Now;
+                DateTimeOffset from;
+                if (info.From.HasValue)
+                {
+                    from = info.From.Value;
+                }
+                else if (m_SystemSettings.FromDate.HasValue)
+                {
+                    from = m_SystemSettings.FromDate.Value;
+                }
+                else
+                {
+                    from = m_CurrentStation.LastUpdate;
+                }
+
+                DateTimeOffset to;
+                if (info.To.HasValue)
+                {
+                    to = info.To.Value;
+                }
+                else if (m_SystemSettings.ToDate.HasValue)
+                {
+                    to = m_SystemSettings.ToDate.Value;
+                }
+                else
+                {
+                    to = DateTimeOffset.Now.AddMinutes(-0.5);
+                }
 
                 var samples = m_StationService.GetSamples(stationId, from, to);
 
@@ -216,17 +270,6 @@ namespace UTB.Data
             CurrentSample = m_Samples[info.SampleIndex];
         }
 
-#if UNITY_EDITOR
-        private void On_SampleDatesChanged(SampleDatesChangedEvent info)
-        {
-            if (info.From.HasValue)
-                m_FromDate = info.From;
-
-            if (info.To.HasValue)
-                m_ToDate = info.To;
-        }
-#endif
-
         private void On_TimerEllapsed(object sender, ElapsedEventArgs e)
         {
             if (m_CurrentStation == null)
@@ -240,30 +283,8 @@ namespace UTB.Data
 
             m_CurrentStation.LastAttempt = DateTimeOffset.Now;
 
-            DateTimeOffset? from;
-            DateTimeOffset? to;
-
-#if UNITY_EDITOR
-            if (Application.isPlaying)
-            {
-                from = StateManager.Instance.FromDate.HasValue ? StateManager.Instance.FromDate : m_CurrentStation.LastUpdate;
-                to = StateManager.Instance.ToDate.HasValue ? StateManager.Instance.ToDate : DateTimeOffset.Now;
-            }
-            else
-            {
-                from = m_FromDate.HasValue ? m_FromDate : m_CurrentStation.LastUpdate;
-                to = m_ToDate.HasValue ? m_ToDate : DateTimeOffset.Now;
-            }
-#else
-            from = StateManager.Instance.FromDate.HasValue ? StateManager.Instance.FromDate : m_CurrentStation.LastUpdate;
-            to = StateManager.Instance.ToDate.HasValue ? StateManager.Instance.ToDate : DateTimeOffset.Now;
-#endif
-
             RequestLoadSamplesEvent evt = new RequestLoadSamplesEvent();
             evt.StationId = m_CurrentStation.Id;
-            evt.From = from;
-            evt.To = to;
-
             evt.Fire();
         }
     }

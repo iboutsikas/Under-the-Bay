@@ -1,88 +1,58 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEditor;
 using UnityEngine;
 using UTB.Core;
 using UTB.Data;
 using static UTB.EventSystem.DataEvents;
 
-public class UnderTheBayWindow : EditorWindow
+[Serializable]
+public class DatePicker: ISerializationCallbackReceiver
 {
-    private static string[] StationNames;
-    private static int selectedStation = 0;
-    private static int selectedSample = 1;
-    
-    private static DateTimeOffset? fromDate;
-    private static string fromDateString;
+    public string DateSerialized;
 
-    private static DateTimeOffset? toDate;
-    private static string toDateString;
+    public DateTimeOffset? Date;
 
-    [MenuItem("Under the Bay/Data stream")]
-    public static void ShowWindow()
+    public void OnAfterDeserialize()
     {
-        GetWindow<UnderTheBayWindow>(true, "Under the Bay Data stream", false);
-
-        RequestLoadStationsEvent evt = new RequestLoadStationsEvent();
-        evt.Fire();
-    }
-
-    private void Awake()
-    {
-        StationsLoadedEvent.Subscribe(On_StationsLoaded);
-        SampleDatesChangedEvent.Subscribe(On_SampleDatesChanged);
-
-        ActiveStationChangedEvent.Subscribe(On_ActiveStationsChanged);
-    }        
-
-    private void OnDestroy()
-    {
-        StationsLoadedEvent.Unsubscribe(On_StationsLoaded);
-        SampleDatesChangedEvent.Subscribe(On_SampleDatesChanged);
-
-        ActiveStationChangedEvent.Unsubscribe(On_ActiveStationsChanged);
-    }
-
-
-
-
-
-    [InitializeOnLoadMethod]
-    private static void OnLoad()
-    {
-        if (HasOpenInstances<UnderTheBayWindow>())
+        if (string.IsNullOrEmpty(DateSerialized))
         {
-            var window = GetWindow<UnderTheBayWindow>(true, "Under the Bay Data stream", false);
-            StationsLoadedEvent.Subscribe(window.On_StationsLoaded);
-            SampleDatesChangedEvent.Subscribe(window.On_SampleDatesChanged);
-
-            ActiveStationChangedEvent.Subscribe(window.On_ActiveStationsChanged);
+            Date = null;
         }
-
-        RequestLoadStationsEvent evt = new RequestLoadStationsEvent();
-        evt.Fire();
-
-        // 8
-        DateTimeOffset temp;
-        if (DateTimeOffset.TryParse(fromDateString, out temp))
-            fromDate = temp;
-        if (DateTimeOffset.TryParse(toDateString, out temp))
-            toDate = temp;
+        else
+        {
+            DateTimeOffset temp;
+            if (DateTimeOffset.TryParse(DateSerialized, out temp))
+            {
+                Date = temp;
+            }
+            else
+            {
+                Debug.LogError($"Failed parsing {DateSerialized} during deserialization");
+            }
+        }
     }
 
-    private bool DateEditor(ref string dateString, ref DateTimeOffset? date, ref Station station)
+    public void OnBeforeSerialize()
+    {
+        DateSerialized = Date.HasValue ? Date.Value.ToString("yyyy-MM-ddTHH:mm:sszzzz") : null;
+    }
+
+    public bool OnGui(DateTimeOffset resetDate)
     {
         bool dirty = false;
         bool accepted = false;
+
         EditorGUILayout.BeginHorizontal();
-        dateString = EditorGUILayout.TextField(dateString);
+        DateSerialized = EditorGUILayout.TextField(DateSerialized);
         if (GUILayout.Button("Accept"))
         {
             DateTimeOffset temp;
-            if (DateTimeOffset.TryParse(dateString, out temp))
+            if (DateTimeOffset.TryParse(DateSerialized, out temp))
             {
-                date = temp;
+                Date = temp;
                 accepted = true;
             }
         }
@@ -93,24 +63,134 @@ public class UnderTheBayWindow : EditorWindow
         if (GUILayout.Button("Clear"))
         {
             dirty = true;
-            date = null;
+            Date = null;
+            accepted = true;
         }
         if (GUILayout.Button("From Station"))
         {
-            date = station.LastUpdate;
+            Date = resetDate;
             dirty = true;
         }
         if (GUILayout.Button("Now"))
         {
-            date = DateTimeOffset.Now;
+            Date = DateTimeOffset.Now;
             dirty = true;
         }
         EditorGUILayout.EndHorizontal();
 
         if (dirty)
-            dateString = date.HasValue ? date.Value.ToString("yyyy-MM-ddTHH:mm:sszzzz") : null;
+            DateSerialized = Date.HasValue ? 
+                Date.Value.ToString("yyyy-MM-ddTHH:mm:sszzzz") : 
+                null;
 
         return accepted;
+    }
+    
+    public bool Accept()
+    {
+        bool accepted = false;
+
+        DateTimeOffset temp;
+        if (DateTimeOffset.TryParse(DateSerialized, out temp))
+        {
+            Date = temp;
+            accepted = true;
+        }
+
+        return accepted;
+    }
+
+    public void Clear()
+    {
+        DateSerialized = null;
+        Date = null;
+    }
+}
+
+public class UnderTheBayWindow : EditorWindow
+{
+    [NonSerialized]
+    private string[] StationNames;
+
+    private int selectedStation = -1;
+    private int selectedSample = 1;
+
+    private DatePicker fromDate = new DatePicker();
+    private DatePicker toDate = new DatePicker();
+
+    private Dictionary<int, Guid> m_IndexToGuiMap = new Dictionary<int, Guid>();
+
+    [NonSerialized]
+    private StationConfiguration m_StationConfiguration;
+
+    [NonSerialized]
+    private SystemSettings m_SystemSettings;
+
+    [MenuItem("Under the Bay/Data stream")]
+    public static void ShowWindow()
+    {
+        GetWindow<UnderTheBayWindow>(true, "Under the Bay Data stream", false);
+
+        RequestLoadStationsEvent evt = new RequestLoadStationsEvent();
+        evt.Fire();
+    }
+
+    private void OnEnable()
+    {
+        m_StationConfiguration = Resources.Load<StationConfiguration>("Station Configuration");
+        Debug.Assert(m_StationConfiguration != null);
+        m_SystemSettings = Resources.Load<SystemSettings>("System Settings");
+        Debug.Assert(m_SystemSettings != null);
+
+        if (!fromDate.Date.HasValue)
+            fromDate.Date = m_SystemSettings.FromDate;
+
+        if (!toDate.Date.HasValue)
+            toDate.Date = m_SystemSettings.ToDate;
+
+        StationsLoadedEvent.Subscribe(On_StationsLoaded);
+        SampleDatesChangedEvent.Subscribe(On_SampleDatesChanged);
+
+        ActiveStationChangedEvent.Subscribe(On_ActiveStationsChanged);
+
+        if (selectedStation == -1)
+        {
+            DataContainer.Instance.SelectDefaultStation();
+        }
+        else
+        {
+            Guid temp;
+            if (m_IndexToGuiMap.TryGetValue(selectedStation, out temp))
+            {
+                SelectActiveStationEvent selectEvt = new SelectActiveStationEvent();
+                selectEvt.Guid = temp;
+                selectEvt.Fire();
+            }
+        }
+
+        RequestLoadStationsEvent evt = new RequestLoadStationsEvent();
+        evt.Fire();
+
+        RequestLoadSamplesEvent samplesLoadEvt = new RequestLoadSamplesEvent();
+        samplesLoadEvt.Fire();
+    }
+
+
+
+    private void OnDestroy()
+    {
+        StationsLoadedEvent.Unsubscribe(On_StationsLoaded);
+        SampleDatesChangedEvent.Subscribe(On_SampleDatesChanged);
+
+        ActiveStationChangedEvent.Unsubscribe(On_ActiveStationsChanged);
+    }
+
+    [InitializeOnLoadMethod]
+    private static void OnLoad()
+    {
+        //if (HasOpenInstances<UnderTheBayWindow>())
+        //{
+        //}
     }
 
     private void OnGUI()
@@ -126,7 +206,7 @@ public class UnderTheBayWindow : EditorWindow
         if (GUILayout.Button("Force refresh data"))
         {
             forceUpdate = true;
-            selectedStation = 0;
+            selectedStation = -1;
         }
 
         if (StationNames == null || StationNames.Length == 0)
@@ -134,6 +214,7 @@ public class UnderTheBayWindow : EditorWindow
             EditorGUILayout.LabelField("No data to show!");
             goto HandleUpdates;
         }
+
 
         var newSelection = EditorGUILayout.Popup("Station", selectedStation, StationNames);
         
@@ -151,10 +232,23 @@ public class UnderTheBayWindow : EditorWindow
         EditorGUILayout.LabelField($"Last time the station was updated: {station.LastUpdate}");
 
         EditorGUILayout.LabelField("From date:");
-        fromDateDirty = DateEditor(ref fromDateString, ref fromDate, ref station);
+        fromDateDirty = fromDate.OnGui(station.LastUpdate);
 
         EditorGUILayout.LabelField("To date:");
-        toDateDirty = DateEditor(ref toDateString, ref toDate, ref station);
+        toDateDirty = toDate.OnGui(station.LastUpdate);
+
+        if (GUILayout.Button("Accept both dates"))
+        {
+            fromDateDirty = fromDate.Accept();
+            toDateDirty = toDate.Accept();
+        }
+
+        if (GUILayout.Button("Clear both dates"))
+        {
+            fromDateDirty = toDateDirty = true;
+            fromDate.Clear();
+            toDate.Clear();
+        }
 
         EditorGUILayout.Space(15);
         EditorGUILayout.Separator();
@@ -209,13 +303,7 @@ HandleUpdates:
             RequestLoadStationsEvent loadEvt = new RequestLoadStationsEvent();
             loadEvt.Fire();
 
-            SelectActiveStationEvent selectEvt = new SelectActiveStationEvent();
-            selectEvt.Index = selectedStation;
-            selectEvt.Fire();
-
             RequestLoadSamplesEvent samplesLoadEvt = new RequestLoadSamplesEvent();
-            samplesLoadEvt.From = fromDate;
-            samplesLoadEvt.To = toDate;
             samplesLoadEvt.Fire();
 
             return;
@@ -224,36 +312,23 @@ HandleUpdates:
         if (serverDropdownDirty)
         {
             SelectActiveStationEvent selectEvt = new SelectActiveStationEvent();
-            selectEvt.Index = selectedStation;
+            selectEvt.Guid = m_IndexToGuiMap[selectedStation];
             selectEvt.Fire();
 
-            if (fromDate.HasValue || toDate.HasValue)
-            {
-                RequestLoadSamplesEvent loadEvt = new RequestLoadSamplesEvent();
-                loadEvt.From = fromDate;
-                loadEvt.To = toDate;
-                loadEvt.Fire();
-            }
-                
+            RequestLoadSamplesEvent samplesLoadEvt = new RequestLoadSamplesEvent();
+            samplesLoadEvt.Fire();
         }
 
         if (fromDateDirty || toDateDirty )
         {
-            RequestLoadSamplesEvent loadEvt = new RequestLoadSamplesEvent();
-            loadEvt.From = fromDate;
-            loadEvt.To = toDate;
-            loadEvt.Fire();
-
-            SampleDatesChangedEvent dateEvt = new SampleDatesChangedEvent();
-
-
             if (fromDateDirty)
-                dateEvt.From = fromDate;
+                m_SystemSettings.FromDate = fromDate.Date;
 
             if (toDateDirty)
-                dateEvt.To = toDate;
+                m_SystemSettings.ToDate = toDate.Date;
 
-            dateEvt.Fire();
+            RequestLoadSamplesEvent loadEvt = new RequestLoadSamplesEvent();
+            loadEvt.Fire();
         }
 
         if (sampleDirty)
@@ -264,33 +339,48 @@ HandleUpdates:
         }
     }
 
+
     private void On_StationsLoaded(StationsLoadedEvent info)
     {
+        m_IndexToGuiMap.Clear();
+
         var names = new List<string>();
+        int index = 0;
 
-        foreach (var station in DataContainer.Instance.Stations)
-            names.Add(station.Name);
-
+        foreach(var desc in m_StationConfiguration.Stations)
+        {
+            foreach (var station in DataContainer.Instance.Stations)
+            {
+                if (station.Name == desc.StationName)
+                {
+                    names.Add(desc.FriendlyName);
+                    m_IndexToGuiMap[index++] = station.Id;
+                    break;
+                }
+            }
+        }
+        
         StationNames = names.ToArray();
     }
 
     private void On_SampleDatesChanged(SampleDatesChangedEvent info)
     {
-        if (info.From.HasValue)
-        {
-            fromDate = info.From;
-            fromDateString = fromDate.Value.ToString("yyyy-MM-ddTHH:mm:sszzzz");
-        }
+        //if (info.From.HasValue)
+        //{
+        //    fromDate = info.From;
+        //    fromDateString = fromDate.Value.ToString("yyyy-MM-ddTHH:mm:sszzzz");
+        //}
 
-        if (info.To.HasValue)
-        {
-            toDate = info.To;
-            toDateString = toDate.Value.ToString("yyyy-MM-ddTHH:mm:sszzzz");
-        }
+        //if (info.To.HasValue)
+        //{
+        //    toDate = info.To;
+        //    toDateString = toDate.Value.ToString("yyyy-MM-ddTHH:mm:sszzzz");
+        //}
     }
 
     private void On_ActiveStationsChanged(ActiveStationChangedEvent info)
     {
-        selectedStation = info.Index;
+        var pair = m_IndexToGuiMap.First(p => p.Value == info.Guid);
+        selectedStation = pair.Key;
     }
 }

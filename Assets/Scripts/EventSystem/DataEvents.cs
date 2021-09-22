@@ -13,7 +13,6 @@ namespace UTB.EventSystem
         public class StationsLoadedEvent : Event<StationsLoadedEvent> { }
 
         public class SelectActiveStationEvent: Event<SelectActiveStationEvent> {
-            public int Index;
             public Guid Guid;
             public DateTimeOffset? From;
             public DateTimeOffset? To;
@@ -27,7 +26,6 @@ namespace UTB.EventSystem
         }
 
         public class ActiveStationChangedEvent : Event<ActiveStationChangedEvent> {
-            public int Index;
             public Guid Guid;
         }
 

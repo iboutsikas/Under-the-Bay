@@ -1,0 +1,43 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 679e51c7b0252664e8c2a19d3182283c, type: 3}
+  m_Name: Station Configuration
+  m_EditorClassIdentifier: 
+  Stations:
+  - StationName: Otter Point Creek
+    FriendlyName: Otter Creek Point
+    SelectedSprite: {fileID: 21300000, guid: 2a665fb52e03fda49b62aeeb7b8b12b4, type: 3}
+    IsDefaultStation: 0
+  - StationName: Aquarium East
+    FriendlyName: Nat'l Aquarium East
+    SelectedSprite: {fileID: 21300000, guid: a3ecb2d660c7d1646a6d3307d2f7618a, type: 3}
+    IsDefaultStation: 1
+  - StationName: Aquarium East Bottom
+    FriendlyName: Nat'l Aquarium East Bottom
+    SelectedSprite: {fileID: 21300000, guid: a3ecb2d660c7d1646a6d3307d2f7618a, type: 3}
+    IsDefaultStation: 0
+  - StationName: Aquarium West
+    FriendlyName: Nat'l Aquarium West
+    SelectedSprite: {fileID: 21300000, guid: 1a1e6b7e5eb36ad4cbb4b8be5c8132db, type: 3}
+    IsDefaultStation: 0
+  - StationName: Masonville Cove Pier
+    FriendlyName: Masonville Cove
+    SelectedSprite: {fileID: 21300000, guid: 27c9a6399506f124ba69ad7fa2a00efc, type: 3}
+    IsDefaultStation: 0
+  - StationName: Little Monie
+    FriendlyName: Monie Bay
+    SelectedSprite: {fileID: 21300000, guid: bc99b70c833db594cbb8e541b93efa9b, type: 3}
+    IsDefaultStation: 0
+  - StationName: Mallows Bay Buoy
+    FriendlyName: Mallows Bay Buoy
+    SelectedSprite: {fileID: 21300000, guid: 10bca160143c06c4db8b3b2253373740, type: 3}
+    IsDefaultStation: 0

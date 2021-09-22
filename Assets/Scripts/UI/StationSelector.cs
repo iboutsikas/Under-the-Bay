@@ -50,7 +50,7 @@ namespace UTB.UI
 
         private void On_ActiveStationChanged(ActiveStationChangedEvent info)
         {
-            m_Dropdown.value = info.Index;
+            //m_Dropdown.value = info.Index;
 
             var sample = DataContainer.Instance.CurrentSample;
 
@@ -60,7 +60,6 @@ namespace UTB.UI
         private void On_DropdownValueChanged(int index)
         {
             SelectActiveStationEvent evt = new SelectActiveStationEvent();
-            evt.Index = index;
             evt.Fire();
         }
 

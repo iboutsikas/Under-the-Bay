@@ -145,8 +145,12 @@ namespace UTB.Input
                     }
                 }
             }
-
-            var currentOrientation = UnityEngine.Input.deviceOrientation;
+            DeviceOrientation currentOrientation;
+#if UNITY_EDITOR
+            currentOrientation = (Screen.height > Screen.width) ? DeviceOrientation.Portrait : DeviceOrientation.LandscapeLeft;
+#else
+            currentOrientation = UnityEngine.Input.deviceOrientation;
+#endif
             if (m_DeviceOrientation != currentOrientation)
             {
                 var oldOrientation = m_DeviceOrientation;

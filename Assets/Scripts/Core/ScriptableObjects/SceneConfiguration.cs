@@ -21,7 +21,7 @@ namespace UTB.Core
         public string SceneName;
     }
 
-    [CreateAssetMenu(fileName = "Scene Configuration", menuName = "Settings/SceneConfiguration", order = 1)]
+    [CreateAssetMenu(fileName = "Scene Configuration", menuName = "Settings/Scene Configuration", order = 1)]
     public class SceneConfiguration : ScriptableObject
     {
         public List<SceneDescription> Scenes;
