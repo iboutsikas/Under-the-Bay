@@ -17,6 +17,9 @@ namespace UTB.UI
         void OnEnable()
         {
             ActiveStationChangedEvent.Subscribe(On_ActiveStationChanged);
+
+            var station = DataContainer.Instance.CurrentStation;
+            UpdateMapSprite(station);
         }
 
         // Update is called once per frame
@@ -29,6 +32,11 @@ namespace UTB.UI
         {
             var station = DataContainer.Instance.CurrentStation;
 
+            UpdateMapSprite(station);
+        }
+    
+        private void UpdateMapSprite(Station station)
+        {
             if (station == null)
                 return;
 

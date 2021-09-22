@@ -167,34 +167,9 @@ namespace UTB.Data
             if (newStation != null)
                 CurrentStation = newStation;
 
-#if false
-            m_CurrentStation.LastAttempt = DateTimeOffset.Now;
-
-            DateTimeOffset? from;
-            DateTimeOffset? to;
-
-#if UNITY_EDITOR
-            if (Application.isPlaying)
-            {
-                from = StateManager.Instance.FromDate.HasValue ? StateManager.Instance.FromDate : m_CurrentStation.LastUpdate;
-                to = StateManager.Instance.ToDate.HasValue ? StateManager.Instance.ToDate : DateTimeOffset.Now;
-            }
-            else
-            {
-                from = m_FromDate.HasValue ? m_FromDate : m_CurrentStation.LastUpdate;
-                to = m_ToDate.HasValue ? m_ToDate : DateTimeOffset.Now;
-            }
-#else
-            from = StateManager.Instance.FromDate.HasValue ? StateManager.Instance.FromDate : m_CurrentStation.LastUpdate;
-            to = StateManager.Instance.ToDate.HasValue ? StateManager.Instance.ToDate : DateTimeOffset.Now;
-#endif
-
-            RequestLoadSamplesEvent samplesLoadEvt = new RequestLoadSamplesEvent();
-            samplesLoadEvt.StationId = m_CurrentStation.Id;
-            samplesLoadEvt.From = from;
-            samplesLoadEvt.To = to;
-            samplesLoadEvt.Fire();    
-#endif            
+            RequestLoadSamplesEvent samplesEvt = new RequestLoadSamplesEvent();
+            samplesEvt.StationId = CurrentStation.Id;
+            samplesEvt.Fire();
         }
 
         private void On_ActiveStationChanged(ActiveStationChangedEvent info)
@@ -251,7 +226,7 @@ namespace UTB.Data
                     return;
 
                 m_Samples = samples;
-                CurrentSample = m_Samples[0];
+                CurrentSample = m_Samples.FirstOrDefault();
 
                 SamplesLoadedEvent evt = new SamplesLoadedEvent();
                 evt.Fire();

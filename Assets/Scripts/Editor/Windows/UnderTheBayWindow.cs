@@ -327,6 +327,8 @@ HandleUpdates:
             if (toDateDirty)
                 m_SystemSettings.ToDate = toDate.Date;
 
+            EditorUtility.SetDirty(m_SystemSettings);
+
             RequestLoadSamplesEvent loadEvt = new RequestLoadSamplesEvent();
             loadEvt.Fire();
         }

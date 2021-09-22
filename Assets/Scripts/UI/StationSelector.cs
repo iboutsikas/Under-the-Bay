@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -11,8 +12,12 @@ namespace UTB.UI
 {
     public class StationSelector : MonoBehaviour
     {
+        private Dictionary<int, Guid> m_IndexToGuiMap = new Dictionary<int, Guid>();
+        
         private TMP_Dropdown m_Dropdown;
 
+        [SerializeField]
+        private StationConfiguration m_StationConfiguration;
         public TMP_Text ServerInfoText;
 
         void Awake()
@@ -20,16 +25,14 @@ namespace UTB.UI
             m_Dropdown = GetComponent<TMP_Dropdown>();
 
             m_Dropdown.onValueChanged.AddListener(On_DropdownValueChanged);
+            
         }
         
 
         private void OnEnable()
         {
             ActiveStationChangedEvent.Subscribe(On_ActiveStationChanged);
-            StationsLoadedEvent.Subscribe(On_StationsLoaded);
-
-            RequestLoadStationsEvent evt = new RequestLoadStationsEvent();
-            evt.Fire();
+            StationsLoadedEvent.Subscribe(On_StationsLoaded);            
         }
 
         
@@ -50,16 +53,15 @@ namespace UTB.UI
 
         private void On_ActiveStationChanged(ActiveStationChangedEvent info)
         {
-            //m_Dropdown.value = info.Index;
+            var pair = m_IndexToGuiMap.First(p => p.Value == info.Guid);
 
-            var sample = DataContainer.Instance.CurrentSample;
-
-            FillServerInfo(sample);
+            m_Dropdown.SetValueWithoutNotify(pair.Key);
         }
 
         private void On_DropdownValueChanged(int index)
         {
             SelectActiveStationEvent evt = new SelectActiveStationEvent();
+            evt.Guid = m_IndexToGuiMap[index];
             evt.Fire();
         }
 
@@ -67,25 +69,30 @@ namespace UTB.UI
         {
             if (m_Dropdown == null)
                 return;
-            var dc = DataContainer.Instance;
 
-
-            var options = new List<TMP_Dropdown.OptionData>();
-            foreach (var station in dc.Stations)
+            m_Dropdown.options.Clear();
+            int index = 0;
+            foreach (var desc in m_StationConfiguration.Stations)
             {
-                options.Add(new TMP_Dropdown.OptionData(station.Name));
+                foreach (var station in DataContainer.Instance.Stations)
+                {
+                    if (station.Name == desc.StationName)
+                    {
+                        m_Dropdown.options.Add(new TMP_Dropdown.OptionData(desc.FriendlyName));
+                        m_IndexToGuiMap[index++] = station.Id;
+                        break;
+                    }
+                }
             }
-            m_Dropdown.options = options;
-
-            var sample = dc.CurrentSample;
-
-            FillServerInfo(sample);
         }
 
         private void FillServerInfo(BayData sample)
         {
             if (sample == null)
+            {
+                ServerInfoText.text = "No sample available";
                 return;
+            }
 
             ServerInfoText.text =
                 $"Oxygen {sample.Oxygen} mg/L\n" +

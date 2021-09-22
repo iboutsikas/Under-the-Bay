@@ -38,6 +38,6 @@ MonoBehaviour:
     SelectedSprite: {fileID: 21300000, guid: bc99b70c833db594cbb8e541b93efa9b, type: 3}
     IsDefaultStation: 0
   - StationName: Mallows Bay Buoy
-    FriendlyName: Mallows Bay Buoy
+    FriendlyName: Mallows Bay D/C
     SelectedSprite: {fileID: 21300000, guid: 10bca160143c06c4db8b3b2253373740, type: 3}
     IsDefaultStation: 0

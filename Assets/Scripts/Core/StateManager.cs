@@ -1,14 +1,12 @@
 using System;
 using UnityEngine;
-
 using static UTB.EventSystem.DataEvents;
 
 namespace UTB.Core
 {
     public class StateManager : MonoBehaviourSingletonPersistent<StateManager>
     {
-        public DateTimeOffset? FromDate;
-        public DateTimeOffset? ToDate;
+        public SystemSettings SystemSettings;
 
         public override void Awake()
         {
@@ -18,25 +16,19 @@ namespace UTB.Core
 
         private void OnEnable()
         {
-            SampleDatesChangedEvent.Subscribe(On_SampleDatesChanged);
+            SystemSettings.FromDate = null;
+            SystemSettings.ToDate = null;
 
+            RequestLoadStationsEvent stationsEvt = new RequestLoadStationsEvent();
+            stationsEvt.Fire();
+
+            RequestLoadSamplesEvent samplesEvt = new RequestLoadSamplesEvent();
+            samplesEvt.Fire();
         }
 
         private void OnDisable()
         {
-            SampleDatesChangedEvent.Unsubscribe(On_SampleDatesChanged);
 
         }
-
-        private void On_SampleDatesChanged(SampleDatesChangedEvent info)
-        {
-            if (info.From.HasValue)
-                FromDate = info.From.Value;
-
-            if (info.To.HasValue)
-                ToDate = info.To.Value;
-        }
-
-
     }
 }
