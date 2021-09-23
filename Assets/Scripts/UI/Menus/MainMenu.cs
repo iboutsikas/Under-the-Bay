@@ -19,7 +19,7 @@ namespace UTB.UI
             base.Awake();
 
             // We start from 1 as the first is the landing page, and that is not in the menu
-            int i = 1;
+            int i = 0;
             foreach (var button in SceneChangingButtons)
             {
                 int index = i;
@@ -42,6 +42,8 @@ namespace UTB.UI
             SystemButton.onClick.AddListener(On_SystemButtonClicked);
 
             SceneLoadedEvent.Subscribe(On_SceneLoaded);
+
+            Debug.Log("[Main Menu] Awake");
         }
 
         private void OnDestroy()

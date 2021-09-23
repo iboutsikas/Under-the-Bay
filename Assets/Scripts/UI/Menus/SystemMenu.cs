@@ -12,7 +12,7 @@ namespace UTB.UI
         public ToggleSwitch StoriesSwitch;
 
 
-        private void Awake()
+        protected override void Awake()
         {
             base.Awake();
 

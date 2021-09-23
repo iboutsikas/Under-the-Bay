@@ -42,6 +42,16 @@ namespace UTB.UI
         {
             m_RectTransform = GetComponent<RectTransform>();
             m_Pages = GetComponentsInChildren<Page>();
+
+            SceneLoadedEvent.Subscribe(On_SceneLoaded);
+
+            // We will only be activated once AR scenes have loaded
+            gameObject.SetActive(false);
+        }
+
+        private void OnDestroy()
+        {
+            SceneLoadedEvent.Unsubscribe(On_SceneLoaded);
         }
 
         private void Start()
@@ -61,7 +71,6 @@ namespace UTB.UI
             SwipeEndEvent.Subscribe(On_SwipeEnd);
             OrientationChangedEvent.Subscribe(On_OrientationChange);
 
-            SceneLoadedEvent.Subscribe(On_SceneLoaded);
         }
 
         private void OnDisable()
@@ -70,8 +79,6 @@ namespace UTB.UI
             SwipeProgressEvent.Unsubscribe(On_SwipeProgress);
             SwipeEndEvent.Unsubscribe(On_SwipeEnd);
             OrientationChangedEvent.Unsubscribe(On_OrientationChange);
-
-            SceneLoadedEvent.Unsubscribe(On_SceneLoaded);
         }
 
         private void On_OrientationChange(OrientationChangedEvent info)
@@ -257,6 +264,18 @@ namespace UTB.UI
 
         private void On_SceneLoaded(SceneLoadedEvent info)
         {
+            if (info.BuildIndex == SceneConfig.HomeScreen.BuildIndex)
+            {
+                gameObject.SetActive(false);
+                return;
+            }
+            
+            if (!gameObject.activeSelf)
+            {
+                gameObject.SetActive(true);
+                return;
+            }
+
             m_WaitingForLoad = false;
 
             if (m_CaptureTexture != null)
