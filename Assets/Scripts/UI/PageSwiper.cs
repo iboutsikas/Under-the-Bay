@@ -127,8 +127,10 @@ namespace UTB.UI
             bool isCorrectDirectionSwipe = 
                 info.Direction.HasFlag(SwipeDirection.LEFT) || 
                 info.Direction.HasFlag(SwipeDirection.RIGHT);
+
+            bool waiting = m_WaitingForFade || m_WaitingForLoad;
             
-            if (m_Swiping || !isCorrectDirectionSwipe || m_WaitingForFade || m_WaitingForLoad)
+            if (m_Swiping || waiting || !isCorrectDirectionSwipe)
                 return;
             
             m_Swiping = true;
@@ -143,14 +145,14 @@ namespace UTB.UI
             {
                 AdvanceNextScene();
                 m_Pages[0].EnableCaptureScreen(m_CaptureTexture, Canvas.rect.width, Canvas.rect.height);
-                m_Pages[1].EnableLoadingScreen(SceneConfig.Scenes[m_NextScene]);
+                m_Pages[1].EnableLoadingScreen(SceneConfig.ARScenes[m_NextScene]);
 
                 MoveFullRight();
             }
             else
             {
                 AdvancePreviousScene();
-                m_Pages[0].EnableLoadingScreen(SceneConfig.Scenes[m_NextScene]);
+                m_Pages[0].EnableLoadingScreen(SceneConfig.ARScenes[m_NextScene]);
                 m_Pages[1].EnableCaptureScreen(m_CaptureTexture, Canvas.rect.width, Canvas.rect.height);
 
                 MoveFullLeft();
@@ -161,7 +163,9 @@ namespace UTB.UI
 
         private void On_SwipeProgress(SwipeProgressEvent evt)
         {
-            if (!m_Swiping)
+            bool waiting = m_WaitingForFade || m_WaitingForLoad;
+
+            if (!m_Swiping || waiting)
                 return;
 
             var pos = m_RectTransform.anchoredPosition;
@@ -188,7 +192,9 @@ namespace UTB.UI
                 info.Direction.HasFlag(SwipeDirection.LEFT) ||
                 info.Direction.HasFlag(SwipeDirection.RIGHT);
 
-            if (!m_Swiping && !isCorrectDirectionSwipe)
+            bool waiting = m_WaitingForFade || m_WaitingForLoad;
+
+            if (!m_Swiping || !isCorrectDirectionSwipe || waiting)
                 return;
 
             m_Swiping = false;
@@ -239,7 +245,7 @@ namespace UTB.UI
                 m_WaitingForFade = true;
 
                 RequestSceneLoadEvent loadEvt = new RequestSceneLoadEvent();
-                loadEvt.SceneIndex = SceneConfig.Scenes[m_NextScene].BuildIndex;
+                loadEvt.SceneIndex = SceneConfig.ARScenes[m_NextScene].BuildIndex;
                 loadEvt.Fire();
                 m_CurrentScene = m_NextScene;
             }
@@ -257,9 +263,9 @@ namespace UTB.UI
                 RenderTexture.ReleaseTemporary(m_CaptureTexture);
 
             // Update the scene to whatever was loaded
-            for(int i = 0; i < SceneConfig.Scenes.Count; ++i)
+            for(int i = 0; i < SceneConfig.ARScenes.Count; ++i)
             {
-                if (SceneConfig.Scenes[i].BuildIndex == info.BuildIndex)
+                if (SceneConfig.ARScenes[i].BuildIndex == info.BuildIndex)
                 {
                     m_CurrentScene = i;
                     break;
@@ -273,7 +279,7 @@ namespace UTB.UI
         void AdvanceNextScene()
         {
             m_NextScene = m_CurrentScene + 1;
-            if (m_NextScene >= SceneConfig.Scenes.Count)
+            if (m_NextScene >= SceneConfig.ARScenes.Count)
                 m_NextScene = 0;
         }
 
@@ -281,7 +287,7 @@ namespace UTB.UI
         {
             m_NextScene = m_CurrentScene - 1;
             if (m_NextScene < 0)
-                m_NextScene = SceneConfig.Scenes.Count - 1;
+                m_NextScene = SceneConfig.ARScenes.Count - 1;
         }
 
         void StartFadeoutTimer()

@@ -14,17 +14,18 @@ namespace UTB.Core
         public Color BackgroundColor;
     }
     
-    [Serializable]
-    public struct MenuSceneDescription
-    {
-        public int BuildIndex;
-        public string SceneName;
-    }
+    //[Serializable]
+    //public struct MenuSceneDescription
+    //{
+    //    public int BuildIndex;
+    //    public string SceneName;
+    //}
 
     [CreateAssetMenu(fileName = "Scene Configuration", menuName = "Settings/Scene Configuration", order = 1)]
     public class SceneConfiguration : ScriptableObject
     {
-        public List<SceneDescription> Scenes;
-        public List<MenuSceneDescription> MenuScenes;
+        public SceneDescription HomeScreen;
+        public List<SceneDescription> ARScenes;
+        //public List<MenuSceneDescription> MenuScenes;
     }
 }

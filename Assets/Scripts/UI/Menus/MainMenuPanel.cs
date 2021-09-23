@@ -24,10 +24,10 @@ namespace UTB.UI
             {
                 int index = i;
                 
-                if (index >= SceneConfig.Scenes.Count)
+                if (index >= SceneConfig.ARScenes.Count)
                     continue;
                 
-                SceneDescription desc = SceneConfig.Scenes[index];
+                SceneDescription desc = SceneConfig.ARScenes[index];
 
                 button.onClick.AddListener(() =>
                 {
