@@ -8,7 +8,7 @@ using static UTB.EventSystem.SceneLoadingEvents;
 
 namespace UTB.UI
 {
-    public class MainMenuPanel : MenuPanel
+    public class MainMenu : MenuPanel
     {
         public SceneConfiguration SceneConfig;
         public List<Button> SceneChangingButtons;
@@ -39,6 +39,8 @@ namespace UTB.UI
                 ++i;
             }
 
+            SystemButton.onClick.AddListener(On_SystemButtonClicked);
+
             SceneLoadedEvent.Subscribe(On_SceneLoaded);
         }
 
@@ -47,24 +49,17 @@ namespace UTB.UI
             SceneLoadedEvent.Unsubscribe(On_SceneLoaded);
         }
 
-        // Start is called before the first frame update
-        void Start()
-        {
-        
-        }
-
-        // Update is called once per frame
-        void Update()
-        {
-        
-        }
-
         private void On_SceneLoaded(SceneLoadedEvent info)
         {
             if (IsOpen())
             {
                 PopOut();
             }
+        }
+
+        private void On_SystemButtonClicked()
+        {
+            this.m_MenuManager.OpenSystemMenu();
         }
     }
 }

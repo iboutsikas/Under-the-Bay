@@ -9,6 +9,7 @@ namespace UTB.UI
     using UnityEngine;
     public class MenuPanel : MonoBehaviour
     {
+        protected MenuManager m_MenuManager;
 
         private RectTransform m_RectTransform;
         private bool m_IsOpen = false;
@@ -71,10 +72,10 @@ namespace UTB.UI
             //    m_Manager.RequestClose(this);
         }
 
-        //public void RegisterManager(MainMenuManager manager)
-        //{
-        //    //m_Manager = manager;
-        //}
+        public void RegisterManager(MenuManager manager)
+        {
+            m_MenuManager = manager;
+        }
     }
 
 }

@@ -8,7 +8,8 @@ namespace UTB.UI
 {
     public class MenuManager : MonoBehaviourSingletonPersistent<MenuManager>
     {
-        public MainMenuPanel MainMenu;
+        public MainMenu MainMenu;
+        public SystemMenu SystemMenu;
 
         public Button BurgerButton;
 
@@ -17,6 +18,12 @@ namespace UTB.UI
             base.Awake();
 
             BurgerButton.onClick.AddListener(On_BurgerButtonClicked);
+
+            Debug.Assert(MainMenu != null);
+            Debug.Assert(SystemMenu != null);
+
+            MainMenu.RegisterManager(this);
+            SystemMenu.RegisterManager(this);
         }
 
         private void OnDestroy()
@@ -30,6 +37,14 @@ namespace UTB.UI
                 MainMenu.PopOut();
             else
                 MainMenu.PopIn();
+        }
+
+        public void OpenSystemMenu()
+        {
+            if (MainMenu.IsOpen())
+                MainMenu.PopOut();
+
+            SystemMenu.PopIn();
         }
     }
 }
