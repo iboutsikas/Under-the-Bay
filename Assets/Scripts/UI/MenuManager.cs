@@ -6,10 +6,12 @@ using UnityEngine.UI;
 
 namespace UTB.UI
 {
+    [DefaultExecutionOrder(-1)]
     public class MenuManager : MonoBehaviourSingletonPersistent<MenuManager>
     {
-        public MainMenu MainMenu;
-        public SystemMenu SystemMenu;
+        private Dictionary<MenuType, MenuPanel> m_Menus;
+        private MenuPanel m_CurrentMenu = null;
+
 
         public Button BurgerButton;
 
@@ -17,13 +19,10 @@ namespace UTB.UI
         {
             base.Awake();
 
+            m_Menus = new Dictionary<MenuType, MenuPanel>();
             BurgerButton.onClick.AddListener(On_BurgerButtonClicked);
 
-            Debug.Assert(MainMenu != null);
-            Debug.Assert(SystemMenu != null);
-
-            MainMenu.RegisterManager(this);
-            SystemMenu.RegisterManager(this);
+            Debug.Assert(BurgerButton != null);
         }
 
         private void OnDestroy()
@@ -33,18 +32,57 @@ namespace UTB.UI
 
         private void On_BurgerButtonClicked()
         {
-            if (MainMenu.IsOpen())
-                MainMenu.PopOut();
-            else
-                MainMenu.PopIn();
+            RequestOpenMenu(MenuType.MAIN_MENU);
         }
 
-        public void OpenSystemMenu()
+        public void RegisterMenu(MenuPanel menu)
         {
-            if (MainMenu.IsOpen())
-                MainMenu.PopOut();
+            Debug.Assert(menu.MenuType != MenuType.NONE, 
+                "A concrete panel should always have a type other than NONE");
+            
+            if (m_Menus.ContainsKey(menu.MenuType))
+            {
+                Debug.LogWarning($"There is already a menu of type {menu.MenuType} and we tried to register another!");
+                return;
+            }
 
-            SystemMenu.PopIn();
+            m_Menus.Add(menu.MenuType, menu);
+        }
+
+        public void RequestOpenMenu(MenuType type)
+        {
+            Debug.Assert(type != MenuType.NONE,
+                            "A concrete panel should always have a type other than NONE");
+
+            if (m_CurrentMenu != null && m_CurrentMenu.MenuType == type)
+                return;
+
+            MenuPanel temp = null;
+
+            if (m_Menus.TryGetValue(type, out temp))
+            {
+                if (m_CurrentMenu != null)
+                    m_CurrentMenu.PopOut();
+
+                temp.PopIn();
+                m_CurrentMenu = temp;
+            }
+        }
+
+        public void RequestClose(MenuPanel menu)
+        {
+            Debug.Assert(menu.MenuType != MenuType.NONE,
+                "A concrete panel should always have a type other than NONE");
+
+            if (m_CurrentMenu == menu)
+            {
+                m_CurrentMenu.PopOut();
+                m_CurrentMenu = null;
+            }
+            else
+            {
+                Debug.LogWarning("Tried to close menu that is not open");
+            }
         }
     }
 }

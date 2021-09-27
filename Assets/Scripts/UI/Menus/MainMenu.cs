@@ -14,6 +14,12 @@ namespace UTB.UI
         public List<Button> SceneChangingButtons;
         public Button SystemButton;
 
+        public MainMenu()
+            :base(MenuType.MAIN_MENU)
+        {
+
+        }
+
         protected override void Awake()
         {
             base.Awake();
@@ -61,7 +67,7 @@ namespace UTB.UI
 
         private void On_SystemButtonClicked()
         {
-            this.m_MenuManager.OpenSystemMenu();
+            this.m_MenuManager.RequestOpenMenu(MenuType.SYSTEM);
         }
     }
 }

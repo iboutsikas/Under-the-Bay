@@ -14,6 +14,11 @@ namespace UTB.UI
         public Toggle VoiceMixToggle;
         public Slider VoiceMixSlider;
 
+        public SystemMenu()
+            :base(MenuType.SYSTEM)
+        {
+
+        }
 
         protected override void Awake()
         {
