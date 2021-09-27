@@ -56,7 +56,7 @@ MonoBehaviour:
       m_Calls: []
   Knob: {fileID: 1740084278649575291}
   ActiveMask: {fileID: 7189672632297271007}
-  AnimationTime: 0.3
+  AnimationTime: 0.1
   TweenType: 0
 --- !u!1 &6122586323575095722
 GameObject:

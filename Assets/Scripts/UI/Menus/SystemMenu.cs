@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 using static UTB.EventSystem.StateEvents;
 
 namespace UTB.UI
@@ -10,6 +11,8 @@ namespace UTB.UI
     {
         public ToggleSwitch DataSwitch;
         public ToggleSwitch StoriesSwitch;
+        public Toggle VoiceMixToggle;
+        public Slider VoiceMixSlider;
 
 
         protected override void Awake()
@@ -18,11 +21,18 @@ namespace UTB.UI
 
             Debug.Assert(DataSwitch != null);
             DataSwitch.onToggled.AddListener(On_DataSwitchToggled);
+            
+            Debug.Assert(StoriesSwitch != null);
             StoriesSwitch.onToggled.AddListener(On_StoriesSwitchToggled);
+
+            //Debug.Assert(VoiceMixToggle != null);
+            //VoiceMixToggle.onValueChanged.AddListener(On_VoiceMixToggled);
 
             StoriesToggledEvent.Subscribe(On_StoriesToggled);
             DataStreamToggledEvent.Subscribe(On_DataToggled);
         }
+
+        
 
         private void OnDestroy()
         {
@@ -44,6 +54,11 @@ namespace UTB.UI
             DataStreamToggledEvent evt = new DataStreamToggledEvent();
             evt.StreamEnabled = state;
             evt.Fire();
+        }
+
+        private void On_VoiceMixToggled(bool state)
+        {
+            throw new NotImplementedException();
         }
 
         private void On_DataToggled(DataStreamToggledEvent info)
