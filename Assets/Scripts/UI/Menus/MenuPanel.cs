@@ -4,11 +4,13 @@ using UnityEngine;
 
 namespace UTB.UI
 {
+    using System;
     using System.Collections;
     using System.Collections.Generic;
     using UnityEngine;
     public class MenuPanel : MonoBehaviour
     {
+        protected MenuManager m_MenuManager;
 
         private RectTransform m_RectTransform;
         private bool m_IsOpen = false;
@@ -29,25 +31,32 @@ namespace UTB.UI
             gameObject.SetActive(false);
         }
 
-        public void PopIn()
+        public void PopIn(Action callback = null)
         {
             gameObject.SetActive(true);
 
-            LeanTween.move(m_RectTransform, new Vector2(0.0f, OriginalY), animationTime)
+            var desc = LeanTween.move(m_RectTransform, new Vector2(0.0f, OriginalY), animationTime)
                 .setEase(TweenType);
+
+            if (callback != null)
+                desc.setOnComplete(callback);
+                
             //m_RectTransform.rect.bottom = 0;
             m_IsOpen = true;
         }
 
-        public void PopOut()
+        public void PopOut(Action callback = null)
         {
-            LeanTween.move(m_RectTransform, new Vector2(0.0f, HiddenY), animationTime)
+            var desc = LeanTween.move(m_RectTransform, new Vector2(0.0f, HiddenY), animationTime)
                 .setEase(TweenType)
                 .setOnComplete(() =>
                 {
                     m_IsOpen = false;
                     gameObject.SetActive(false);
                 });
+
+            if (callback != null)
+                desc.setOnComplete(callback);
         }
 
         public bool IsOpen()
@@ -67,14 +76,13 @@ namespace UTB.UI
 
         public void CloseMenu()
         {
-            //if (m_Manager != null)
-            //    m_Manager.RequestClose(this);
+            this.PopOut();
         }
 
-        //public void RegisterManager(MainMenuManager manager)
-        //{
-        //    //m_Manager = manager;
-        //}
+        public void RegisterManager(MenuManager manager)
+        {
+            m_MenuManager = manager;
+        }
     }
 
 }

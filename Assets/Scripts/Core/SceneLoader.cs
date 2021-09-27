@@ -26,9 +26,9 @@ namespace UTB.Core
 
         private void Start()
         {
-            if (!LoadFirstSceneOnStart || !(SceneConfig.Scenes.Count > 0))
+            if (!LoadFirstSceneOnStart)
                 return;
-            var scene = SceneConfig.Scenes[0];
+            var scene = SceneConfig.HomeScreen;
             SceneManager.LoadSceneAsync(scene.BuildIndex, LoadSceneMode.Additive);
         }
 

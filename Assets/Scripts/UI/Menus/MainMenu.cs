@@ -8,7 +8,7 @@ using static UTB.EventSystem.SceneLoadingEvents;
 
 namespace UTB.UI
 {
-    public class MainMenuPanel : MenuPanel
+    public class MainMenu : MenuPanel
     {
         public SceneConfiguration SceneConfig;
         public List<Button> SceneChangingButtons;
@@ -19,15 +19,15 @@ namespace UTB.UI
             base.Awake();
 
             // We start from 1 as the first is the landing page, and that is not in the menu
-            int i = 1;
+            int i = 0;
             foreach (var button in SceneChangingButtons)
             {
                 int index = i;
                 
-                if (index >= SceneConfig.Scenes.Count)
+                if (index >= SceneConfig.ARScenes.Count)
                     continue;
                 
-                SceneDescription desc = SceneConfig.Scenes[index];
+                SceneDescription desc = SceneConfig.ARScenes[index];
 
                 button.onClick.AddListener(() =>
                 {
@@ -39,24 +39,16 @@ namespace UTB.UI
                 ++i;
             }
 
+            SystemButton.onClick.AddListener(On_SystemButtonClicked);
+
             SceneLoadedEvent.Subscribe(On_SceneLoaded);
+
+            Debug.Log("[Main Menu] Awake");
         }
 
         private void OnDestroy()
         {
             SceneLoadedEvent.Unsubscribe(On_SceneLoaded);
-        }
-
-        // Start is called before the first frame update
-        void Start()
-        {
-        
-        }
-
-        // Update is called once per frame
-        void Update()
-        {
-        
         }
 
         private void On_SceneLoaded(SceneLoadedEvent info)
@@ -65,6 +57,11 @@ namespace UTB.UI
             {
                 PopOut();
             }
+        }
+
+        private void On_SystemButtonClicked()
+        {
+            this.m_MenuManager.OpenSystemMenu();
         }
     }
 }

@@ -14,6 +14,9 @@ public class SystemSettings : ScriptableObject, ISerializationCallbackReceiver
     public DateTimeOffset? FromDate;
     public DateTimeOffset? ToDate;
 
+    public bool StoriesActive;
+    public bool DataStreamActive;
+
 
     public void OnAfterDeserialize()
     {
