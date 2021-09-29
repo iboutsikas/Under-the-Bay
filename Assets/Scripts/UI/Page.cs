@@ -24,7 +24,7 @@ namespace UTB.UI
 
         private void Awake()
         {
-            Debug.Log("Page::Awake"); 
+            //Debug.Log("Page::Awake"); 
             m_LayoutElement = GetComponent<LayoutElement>();
             Assert.IsNotNull(m_LayoutElement);
             m_CanvasGroup = GetComponent<CanvasGroup>();

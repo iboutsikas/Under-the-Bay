@@ -11,6 +11,7 @@ namespace UTB.UI
     {
         private Dictionary<MenuType, MenuPanel> m_Menus;
         private MenuPanel m_CurrentMenu = null;
+        private MenuPanel m_MainMenu = null;
 
 
         public Button BurgerButton;
@@ -32,7 +33,16 @@ namespace UTB.UI
 
         private void On_BurgerButtonClicked()
         {
-            RequestOpenMenu(MenuType.MAIN_MENU);
+            if (m_MainMenu == null)
+            {
+                Debug.LogWarning("No main menu registered!");
+                return;
+            }
+
+            if (m_MainMenu.IsOpen())
+                RequestClose(m_MainMenu);
+            else
+                RequestOpen(MenuType.MAIN_MENU);
         }
 
         public void RegisterMenu(MenuPanel menu)
@@ -47,9 +57,12 @@ namespace UTB.UI
             }
 
             m_Menus.Add(menu.MenuType, menu);
+
+            if (menu.MenuType == MenuType.MAIN_MENU)
+                m_MainMenu = menu;
         }
 
-        public void RequestOpenMenu(MenuType type)
+        public void RequestOpen(MenuType type)
         {
             Debug.Assert(type != MenuType.NONE,
                             "A concrete panel should always have a type other than NONE");

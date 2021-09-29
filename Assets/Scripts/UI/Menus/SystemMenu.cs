@@ -13,6 +13,7 @@ namespace UTB.UI
         public ToggleSwitch StoriesSwitch;
         public Toggle VoiceMixToggle;
         public Slider VoiceMixSlider;
+        public Button MapButton;
 
         public SystemMenu()
             :base(MenuType.SYSTEM)
@@ -33,11 +34,14 @@ namespace UTB.UI
             //Debug.Assert(VoiceMixToggle != null);
             //VoiceMixToggle.onValueChanged.AddListener(On_VoiceMixToggled);
 
+            Debug.Assert(MapButton != null);
+            MapButton.onClick.AddListener(On_MapButtonPressed);
+
             StoriesToggledEvent.Subscribe(On_StoriesToggled);
             DataStreamToggledEvent.Subscribe(On_DataToggled);
         }
 
-        
+
 
         private void OnDestroy()
         {
@@ -64,6 +68,11 @@ namespace UTB.UI
         private void On_VoiceMixToggled(bool state)
         {
             throw new NotImplementedException();
+        }
+
+        private void On_MapButtonPressed()
+        {
+            m_MenuManager.RequestOpen(MenuType.MAP);
         }
 
         private void On_DataToggled(DataStreamToggledEvent info)

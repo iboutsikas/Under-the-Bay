@@ -51,7 +51,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6443153a94019894e909292c458f77ef, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_FadeoutDelay: 1
+  m_FadeoutDelay: 1.5
+  m_SlideDuration: 0.35
+  m_SlideEaseType: 0
   PercentThreshold: 0.5
   ElasticDragThreshold: 0
   Canvas: {fileID: 0}
@@ -240,6 +242,10 @@ PrefabInstance:
     - target: {fileID: 8390464168268768668, guid: 31fab366784cbf94eaad536df2819ac6, type: 3}
       propertyPath: Canvas
       value: 
+      objectReference: {fileID: 0}
+    - target: {fileID: 8390464168268768668, guid: 31fab366784cbf94eaad536df2819ac6, type: 3}
+      propertyPath: m_FadeDuration
+      value: 0.85
       objectReference: {fileID: 0}
     - target: {fileID: 8390464168492369760, guid: 31fab366784cbf94eaad536df2819ac6, type: 3}
       propertyPath: m_IsActive
@@ -463,6 +469,10 @@ PrefabInstance:
     - target: {fileID: 8390464168268768668, guid: 31fab366784cbf94eaad536df2819ac6, type: 3}
       propertyPath: Canvas
       value: 
+      objectReference: {fileID: 0}
+    - target: {fileID: 8390464168268768668, guid: 31fab366784cbf94eaad536df2819ac6, type: 3}
+      propertyPath: m_FadeDuration
+      value: 0.85
       objectReference: {fileID: 0}
     - target: {fileID: 8390464168492369761, guid: 31fab366784cbf94eaad536df2819ac6, type: 3}
       propertyPath: m_AnchorMax.x
