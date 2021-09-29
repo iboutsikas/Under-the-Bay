@@ -59,7 +59,8 @@ namespace UTB.UI
 
         private void On_SceneLoaded(SceneLoadedEvent info)
         {
-            m_MenuManager.RequestClose(this);
+            if (IsOpen())
+                m_MenuManager.RequestClose(this);
         }
 
         private void On_SystemButtonClicked()
