@@ -135,7 +135,7 @@ namespace UTB.Input
                     {
                         SwipeStartEvent evt = new SwipeStartEvent();
 
-                        Debug.Log($"[InputManager]: Starting swipe event at {m_StartPosition}");
+                        //Debug.Log($"[InputManager]: Starting swipe event at {m_StartPosition}");
 
                         evt.StartPosition = m_StartPosition;
                         evt.Direction = direction;
@@ -257,7 +257,7 @@ namespace UTB.Input
             var direction = swipeEvt.Delta.normalized;
 
             swipeEvt.Direction = GetSwipeDirection(direction);
-            Debug.Log($"[InputManager]: Ending {swipeEvt.Direction} swipe event from {m_StartPosition} to {endPosition}");
+            //Debug.Log($"[InputManager]: Ending {swipeEvt.Direction} swipe event from {m_StartPosition} to {endPosition}");
 
             swipeEvt.Fire();
         }
