@@ -612,7 +612,7 @@ GameObject:
   - component: {fileID: 151125997}
   - component: {fileID: 151125998}
   m_Layer: 5
-  m_Name: Spacer
+  m_Name: Header
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -636,8 +636,8 @@ RectTransform:
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 0}
   m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 0, y: 0}
-  m_Pivot: {x: 0.5, y: 0.5}
+  m_SizeDelta: {x: 789.9367, y: 207.40901}
+  m_Pivot: {x: 0, y: 1}
 --- !u!114 &151125998
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -647,17 +647,13 @@ MonoBehaviour:
   m_GameObject: {fileID: 151125996}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 306cc8c2b49d7114eaa3623786fc2126, type: 3}
+  m_Script: {fileID: 11500000, guid: 1b3b953fb2aced14ebe891e2ea3e2dbb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_IgnoreLayout: 0
-  m_MinWidth: -1
-  m_MinHeight: -1
-  m_PreferredWidth: -1
-  m_PreferredHeight: -1
-  m_FlexibleWidth: -1
-  m_FlexibleHeight: 1
-  m_LayoutPriority: 1
+  Top: 0
+  Left: 0
+  Width: 100
+  Height: 20
 --- !u!1 &277755536
 GameObject:
   m_ObjectHideFlags: 0
@@ -1161,10 +1157,10 @@ MonoBehaviour:
     m_Bottom: 0
   m_ChildAlignment: 0
   m_Spacing: 0
-  m_ChildForceExpandWidth: 1
-  m_ChildForceExpandHeight: 1
-  m_ChildControlWidth: 1
-  m_ChildControlHeight: 1
+  m_ChildForceExpandWidth: 0
+  m_ChildForceExpandHeight: 0
+  m_ChildControlWidth: 0
+  m_ChildControlHeight: 0
   m_ChildScaleWidth: 0
   m_ChildScaleHeight: 0
   m_ReverseArrangement: 0
@@ -1536,8 +1532,8 @@ RectTransform:
   m_Father: {fileID: 1171994229}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0.5, y: 0}
-  m_AnchorMax: {x: 0.5, y: 1}
+  m_AnchorMin: {x: 0, y: 0}
+  m_AnchorMax: {x: 0, y: 0}
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
@@ -1591,7 +1587,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 86710e43de46f6f4bac7c8e50813a599, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_AspectMode: 2
+  m_AspectMode: 3
   m_AspectRatio: 0.8
 --- !u!1 &1171994228
 GameObject:
@@ -1975,7 +1971,7 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 22.35
+  m_fontSize: 32
   m_fontSizeBase: 24
   m_fontWeight: 400
   m_enableAutoSizing: 1
@@ -2041,8 +2037,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 1}
   m_AnchorMax: {x: 0, y: 1}
-  m_AnchoredPosition: {x: 235.66, y: -167}
-  m_SizeDelta: {x: 92.67999, y: 150}
+  m_AnchoredPosition: {x: 92.919235, y: -149.33449}
+  m_SizeDelta: {x: 132.74178, y: 116.14905}
   m_Pivot: {x: 0, y: 1}
 --- !u!114 &1535417653
 MonoBehaviour:
@@ -2056,10 +2052,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1b3b953fb2aced14ebe891e2ea3e2dbb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  Top: 15
-  Left: 27.7
-  Width: 15
-  Height: 10
+  Top: 18
+  Left: 14
+  Width: 20
+  Height: 14
 --- !u!1 &1740938719
 GameObject:
   m_ObjectHideFlags: 0
@@ -2070,9 +2066,9 @@ GameObject:
   m_Component:
   - component: {fileID: 1740938720}
   - component: {fileID: 1740938724}
-  - component: {fileID: 1740938723}
   - component: {fileID: 1740938722}
   - component: {fileID: 1740938721}
+  - component: {fileID: 1740938723}
   m_Layer: 5
   m_Name: Sations
   m_TagString: Untagged
@@ -2100,8 +2096,8 @@ RectTransform:
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 0}
   m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 0, y: 0}
-  m_Pivot: {x: 0, y: 0}
+  m_SizeDelta: {x: 789.9367, y: 829.63605}
+  m_Pivot: {x: 0, y: 1}
 --- !u!114 &1740938721
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2159,17 +2155,13 @@ MonoBehaviour:
   m_GameObject: {fileID: 1740938719}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 306cc8c2b49d7114eaa3623786fc2126, type: 3}
+  m_Script: {fileID: 11500000, guid: 1b3b953fb2aced14ebe891e2ea3e2dbb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_IgnoreLayout: 0
-  m_MinWidth: -1
-  m_MinHeight: -1
-  m_PreferredWidth: -1
-  m_PreferredHeight: -1
-  m_FlexibleWidth: -1
-  m_FlexibleHeight: 3
-  m_LayoutPriority: 1
+  Top: 20
+  Left: 0
+  Width: 100
+  Height: 80
 --- !u!222 &1740938724
 CanvasRenderer:
   m_ObjectHideFlags: 0
