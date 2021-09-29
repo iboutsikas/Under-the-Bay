@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using static MenuEvents;
 
 namespace UTB.UI
 {
@@ -71,15 +72,20 @@ namespace UTB.UI
                 return;
 
             MenuPanel temp = null;
-
-            if (m_Menus.TryGetValue(type, out temp))
+            if (!m_Menus.TryGetValue(type, out temp))
             {
-                if (m_CurrentMenu != null)
-                    m_CurrentMenu.PopOut();
-
-                temp.PopIn();
-                m_CurrentMenu = temp;
+                return;
             }
+
+            if (m_CurrentMenu != null)
+                m_CurrentMenu.PopOut();
+
+            temp.PopIn();
+            m_CurrentMenu = temp;
+
+            MenuOpenedEvent evt = new MenuOpenedEvent();
+            evt.Fire();
+
         }
 
         public void RequestClose(MenuPanel menu)
@@ -87,15 +93,17 @@ namespace UTB.UI
             Debug.Assert(menu.MenuType != MenuType.NONE,
                 "A concrete panel should always have a type other than NONE");
 
-            if (m_CurrentMenu == menu)
+            if (m_CurrentMenu != menu)
             {
-                m_CurrentMenu.PopOut();
-                m_CurrentMenu = null;
+                Debug.LogWarning($"Tried to close menu that is not open {menu.MenuType}");
+                return;
             }
-            else
-            {
-                Debug.LogWarning("Tried to close menu that is not open");
-            }
+
+            m_CurrentMenu.PopOut();
+            m_CurrentMenu = null;
+
+            MenuClosedEvent evt = new MenuClosedEvent();
+            evt.Fire();
         }
     }
 }

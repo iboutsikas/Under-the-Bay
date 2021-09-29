@@ -35,6 +35,10 @@ namespace UTB.UI
             StationsLoadedEvent.Subscribe(On_StationsLoaded);
 
             PopulateDropdown();
+
+            var pair = m_IndexToGuiMap.First(p => p.Value == DataContainer.Instance.CurrentStation.Id);
+
+            m_Dropdown.SetValueWithoutNotify(pair.Key);
         }
 
         

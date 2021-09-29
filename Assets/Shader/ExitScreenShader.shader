@@ -42,13 +42,12 @@ Shader "Unlit/ExitScreenShader"
                 o.vertex = UnityObjectToClipPos(v.vertex);
 
                 o.uv = v.uv.xy;
+
                 #if UNITY_UV_STARTS_AT_TOP
                 //if (_MainTex_TexelSize.y < 0)
                     o.uv.y = 1 - o.uv.y;
                 #endif	
 
-                //o.uv = TRANSFORM_TEX(v.uv, _MainTex);
-                UNITY_TRANSFER_FOG(o,o.vertex);
                 return o;
             }
 
