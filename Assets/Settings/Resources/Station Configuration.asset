@@ -22,7 +22,7 @@ MonoBehaviour:
     SelectedSprite: {fileID: 21300000, guid: a3ecb2d660c7d1646a6d3307d2f7618a, type: 3}
     IsDefaultStation: 1
   - StationName: Aquarium East Bottom
-    FriendlyName: Nat'l Aquarium East Bottom
+    FriendlyName: Nat'l Aquarium Bottom
     SelectedSprite: {fileID: 21300000, guid: a3ecb2d660c7d1646a6d3307d2f7618a, type: 3}
     IsDefaultStation: 0
   - StationName: Aquarium West
@@ -38,6 +38,6 @@ MonoBehaviour:
     SelectedSprite: {fileID: 21300000, guid: bc99b70c833db594cbb8e541b93efa9b, type: 3}
     IsDefaultStation: 0
   - StationName: Mallows Bay Buoy
-    FriendlyName: Mallows Bay D/C
+    FriendlyName: Mallows Bay \\ DC
     SelectedSprite: {fileID: 21300000, guid: 10bca160143c06c4db8b3b2253373740, type: 3}
     IsDefaultStation: 0
