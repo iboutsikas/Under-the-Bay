@@ -195,15 +195,21 @@ namespace UTB.UI
 
         private void On_SwipeEnd(SwipeEndEvent info)
         {
+            bool waiting = m_WaitingForFade || m_WaitingForLoad;
+
+            // We immediately go to swipe processing if we are already swiping
+            if (m_Swiping && !waiting)
+                goto Swipe;
+
             bool isCorrectDirectionSwipe =
                 info.Direction.HasFlag(SwipeDirection.LEFT) ||
                 info.Direction.HasFlag(SwipeDirection.RIGHT);
 
-            bool waiting = m_WaitingForFade || m_WaitingForLoad;
 
-            if (!m_Swiping || !isCorrectDirectionSwipe || waiting)
+            if (!isCorrectDirectionSwipe || waiting)
                 return;
 
+            Swipe:
             m_Swiping = false;
 
             var pos = m_RectTransform.anchoredPosition;
@@ -236,7 +242,7 @@ namespace UTB.UI
 
             // NOTE: on complete will activate at a later point
             // probably after the load has been requested
-            LeanTween.move(m_RectTransform, pos, m_SlideDuration)
+            var desc = LeanTween.move(m_RectTransform, pos, m_SlideDuration)
                 .setEase(m_SlideEaseType)
                 .setOnComplete(() =>
                 {
@@ -277,9 +283,6 @@ namespace UTB.UI
             }
 
             m_WaitingForLoad = false;
-
-            if (m_CaptureTexture != null)
-                RenderTexture.ReleaseTemporary(m_CaptureTexture);
 
             // Update the scene to whatever was loaded
             for(int i = 0; i < SceneConfig.ARScenes.Count; ++i)

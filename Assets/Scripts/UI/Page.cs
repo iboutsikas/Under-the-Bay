@@ -9,6 +9,7 @@ namespace UTB.UI
 {
     public class Page : MonoBehaviour
     {
+        private bool m_FadingOut = false;
         private LayoutElement m_LayoutElement;
         private CanvasGroup m_CanvasGroup;
 
@@ -57,9 +58,11 @@ namespace UTB.UI
 
         public void FadeOut()
         {
+            m_FadingOut = true;
             LeanTween.alphaCanvas(m_CanvasGroup, 0.0f, m_FadeDuration)
                 .setOnComplete(() =>
                 {
+                    m_FadingOut = false;
                     this.gameObject.SetActive(false);
                 });
         }   
@@ -73,6 +76,11 @@ namespace UTB.UI
         {
             m_CanvasGroup.alpha = 1.0f;
             this.gameObject.SetActive(true);
+            if (m_FadingOut)
+            {
+                LeanTween.cancel(m_CanvasGroup.gameObject);
+                m_FadingOut = false;
+            }
         }
 
         public void EnableLoadingScreen(SceneDescription sceneDescription)
