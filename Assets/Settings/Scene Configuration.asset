@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: Scene Configuration
   m_EditorClassIdentifier: 
   HomeScreen:
-    BuildIndex: 4
+    BuildIndex: 3
     SceneName: Home Screen
     LoadingScreen: {fileID: 0}
     BackgroundColor: {r: 0, g: 0, b: 0, a: 0}
@@ -25,8 +25,4 @@ MonoBehaviour:
   - BuildIndex: 2
     SceneName: Scene 2 - Water Moving
     LoadingScreen: {fileID: 21300000, guid: 80d5bea64499c6649ac0f14f3ae6751a, type: 3}
-    BackgroundColor: {r: 0.17254902, g: 0.16470589, b: 0.003921569, a: 1}
-  - BuildIndex: 3
-    SceneName: Scene 3 - Chalk Faeries
-    LoadingScreen: {fileID: 21300000, guid: 7495eb2fb16c63644af39d03bd3232cd, type: 3}
     BackgroundColor: {r: 0.17254902, g: 0.16470589, b: 0.003921569, a: 1}

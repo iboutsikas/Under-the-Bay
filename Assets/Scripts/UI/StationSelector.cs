@@ -32,7 +32,13 @@ namespace UTB.UI
         private void OnEnable()
         {
             ActiveStationChangedEvent.Subscribe(On_ActiveStationChanged);
-            StationsLoadedEvent.Subscribe(On_StationsLoaded);            
+            StationsLoadedEvent.Subscribe(On_StationsLoaded);
+
+            PopulateDropdown();
+
+            var pair = m_IndexToGuiMap.First(p => p.Value == DataContainer.Instance.CurrentStation.Id);
+
+            m_Dropdown.SetValueWithoutNotify(pair.Key);
         }
 
         
@@ -70,6 +76,11 @@ namespace UTB.UI
             if (m_Dropdown == null)
                 return;
 
+            PopulateDropdown();
+        }
+
+        void PopulateDropdown()
+        {
             m_Dropdown.options.Clear();
             int index = 0;
             foreach (var desc in m_StationConfiguration.Stations)

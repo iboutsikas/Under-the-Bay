@@ -3,13 +3,17 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using static MenuEvents;
 
 namespace UTB.UI
 {
+    [DefaultExecutionOrder(-1)]
     public class MenuManager : MonoBehaviourSingletonPersistent<MenuManager>
     {
-        public MainMenu MainMenu;
-        public SystemMenu SystemMenu;
+        private Dictionary<MenuType, MenuPanel> m_Menus;
+        private MenuPanel m_CurrentMenu = null;
+        private MenuPanel m_MainMenu = null;
+
 
         public Button BurgerButton;
 
@@ -17,13 +21,10 @@ namespace UTB.UI
         {
             base.Awake();
 
+            m_Menus = new Dictionary<MenuType, MenuPanel>();
             BurgerButton.onClick.AddListener(On_BurgerButtonClicked);
 
-            Debug.Assert(MainMenu != null);
-            Debug.Assert(SystemMenu != null);
-
-            MainMenu.RegisterManager(this);
-            SystemMenu.RegisterManager(this);
+            Debug.Assert(BurgerButton != null);
         }
 
         private void OnDestroy()
@@ -33,18 +34,76 @@ namespace UTB.UI
 
         private void On_BurgerButtonClicked()
         {
-            if (MainMenu.IsOpen())
-                MainMenu.PopOut();
+            if (m_MainMenu == null)
+            {
+                Debug.LogWarning("No main menu registered!");
+                return;
+            }
+
+            if (m_MainMenu.IsOpen())
+                RequestClose(m_MainMenu);
             else
-                MainMenu.PopIn();
+                RequestOpen(MenuType.MAIN_MENU);
         }
 
-        public void OpenSystemMenu()
+        public void RegisterMenu(MenuPanel menu)
         {
-            if (MainMenu.IsOpen())
-                MainMenu.PopOut();
+            Debug.Assert(menu.MenuType != MenuType.NONE, 
+                "A concrete panel should always have a type other than NONE");
+            
+            if (m_Menus.ContainsKey(menu.MenuType))
+            {
+                Debug.LogWarning($"There is already a menu of type {menu.MenuType} and we tried to register another!");
+                return;
+            }
 
-            SystemMenu.PopIn();
+            m_Menus.Add(menu.MenuType, menu);
+
+            if (menu.MenuType == MenuType.MAIN_MENU)
+                m_MainMenu = menu;
+        }
+
+        public void RequestOpen(MenuType type)
+        {
+            Debug.Assert(type != MenuType.NONE,
+                            "A concrete panel should always have a type other than NONE");
+
+            if (m_CurrentMenu != null && m_CurrentMenu.MenuType == type)
+                return;
+
+            MenuPanel temp = null;
+            if (!m_Menus.TryGetValue(type, out temp))
+            {
+                return;
+            }
+
+            if (m_CurrentMenu != null)
+                m_CurrentMenu.PopOut();
+
+            temp.PopIn();
+            m_CurrentMenu = temp;
+
+            MenuOpenedEvent evt = new MenuOpenedEvent();
+            evt.Fire();
+
+        }
+
+        public void RequestClose(MenuPanel menu)
+        {
+            Debug.Assert(menu.MenuType != MenuType.NONE,
+                "A concrete panel should always have a type other than NONE");
+
+            if (m_CurrentMenu != menu)
+            {
+                Debug.LogWarning($"Tried to close menu that is not open {menu.MenuType}");
+                return;
+            }
+
+            m_CurrentMenu.PopOut();
+            m_CurrentMenu = null;
+
+            MenuClosedEvent evt = new MenuClosedEvent();
+            evt.Fire();
         }
     }
 }

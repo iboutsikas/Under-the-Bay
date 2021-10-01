@@ -9,6 +9,7 @@ namespace UTB.UI
 {
     public class Page : MonoBehaviour
     {
+        private bool m_FadingOut = false;
         private LayoutElement m_LayoutElement;
         private CanvasGroup m_CanvasGroup;
 
@@ -23,7 +24,7 @@ namespace UTB.UI
 
         private void Awake()
         {
-            Debug.Log("Page::Awake"); 
+            //Debug.Log("Page::Awake"); 
             m_LayoutElement = GetComponent<LayoutElement>();
             Assert.IsNotNull(m_LayoutElement);
             m_CanvasGroup = GetComponent<CanvasGroup>();
@@ -57,9 +58,11 @@ namespace UTB.UI
 
         public void FadeOut()
         {
+            m_FadingOut = true;
             LeanTween.alphaCanvas(m_CanvasGroup, 0.0f, m_FadeDuration)
                 .setOnComplete(() =>
                 {
+                    m_FadingOut = false;
                     this.gameObject.SetActive(false);
                 });
         }   
@@ -73,19 +76,24 @@ namespace UTB.UI
         {
             m_CanvasGroup.alpha = 1.0f;
             this.gameObject.SetActive(true);
+            if (m_FadingOut)
+            {
+                LeanTween.cancel(m_CanvasGroup.gameObject);
+                m_FadingOut = false;
+            }
         }
 
         public void EnableLoadingScreen(SceneDescription sceneDescription)
         {
-            m_RawImage.enabled = false;
-            m_LoadingScreenImage.enabled = true;
+            m_RawImage.gameObject.SetActive(false);
+            m_LoadingScreenImage.gameObject.SetActive(true);
             m_LoadingScreenImage.sprite = sceneDescription.LoadingScreen;
             m_BackgroundImage.color = sceneDescription.BackgroundColor;
         }
 
         public void EnableCaptureScreen(RenderTexture texture, float canvasWidth, float canvasHeight)
         {
-            m_RawImage.enabled = true;
+            m_RawImage.gameObject.SetActive(true);
             m_RawImage.texture = texture;
             m_RawImage.uvRect = new Rect() {
                 x       = -0.01f,
@@ -93,7 +101,8 @@ namespace UTB.UI
                 width   = 1.0f,
                 height  = 1.0f
             };
-            m_LoadingScreenImage.enabled = false;
+            m_LoadingScreenImage.gameObject.SetActive(false);
+            m_BackgroundImage.color = new Color(0, 0, 0, 0);
         }
     }
 }

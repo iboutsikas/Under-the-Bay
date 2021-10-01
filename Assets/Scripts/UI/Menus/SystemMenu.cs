@@ -13,7 +13,14 @@ namespace UTB.UI
         public ToggleSwitch StoriesSwitch;
         public Toggle VoiceMixToggle;
         public Slider VoiceMixSlider;
+        public Button MapButton;
+        public Button InfoButton;
 
+        public SystemMenu()
+            :base(MenuType.SYSTEM)
+        {
+
+        }
 
         protected override void Awake()
         {
@@ -25,14 +32,22 @@ namespace UTB.UI
             Debug.Assert(StoriesSwitch != null);
             StoriesSwitch.onToggled.AddListener(On_StoriesSwitchToggled);
 
-            //Debug.Assert(VoiceMixToggle != null);
-            //VoiceMixToggle.onValueChanged.AddListener(On_VoiceMixToggled);
+            Debug.Assert(VoiceMixToggle != null);
+            VoiceMixToggle.onValueChanged.AddListener(On_VoiceMixToggled);
+
+            Debug.Assert(VoiceMixSlider != null);
+            VoiceMixSlider.onValueChanged.AddListener(On_VoiceSliderChanged);
+
+            Debug.Assert(MapButton != null);
+            MapButton.onClick.AddListener(On_MapButtonPressed);
+
+            Debug.Assert(InfoButton != null);
+            InfoButton.onClick.AddListener(On_InfoButtonPressed);
 
             StoriesToggledEvent.Subscribe(On_StoriesToggled);
             DataStreamToggledEvent.Subscribe(On_DataToggled);
         }
-
-        
+                
 
         private void OnDestroy()
         {
@@ -61,6 +76,20 @@ namespace UTB.UI
             throw new NotImplementedException();
         }
 
+        private void On_VoiceSliderChanged(float arg0)
+        {
+            throw new NotImplementedException();
+        }
+
+        private void On_MapButtonPressed()
+        {
+            m_MenuManager.RequestOpen(MenuType.MAP);
+        }
+
+        private void On_InfoButtonPressed()
+        {
+            m_MenuManager.RequestOpen(MenuType.ABOUT);
+        }
         private void On_DataToggled(DataStreamToggledEvent info)
         {
             if (info.StreamEnabled != DataSwitch.Toggled)

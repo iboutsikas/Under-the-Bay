@@ -5,6 +5,7 @@ using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
 using UTB.Core;
+using static MenuEvents;
 using static UTB.EventSystem.InputEvents;
 using static UTB.EventSystem.SceneLoadingEvents;
 
@@ -12,6 +13,7 @@ namespace UTB.UI
 {
     public class PageSwiper : MonoBehaviour
     {
+        private bool m_OnHomeScreen = false;
         private bool m_Swiping = false;
         private bool m_WaitingForLoad = false;
         private bool m_WaitingForFade = false;
@@ -45,6 +47,9 @@ namespace UTB.UI
 
             SceneLoadedEvent.Subscribe(On_SceneLoaded);
 
+            MenuOpenedEvent.Subscribe(On_MenuOpened);
+            MenuClosedEvent.Subscribe(On_MenuClosed);
+
             // We will only be activated once AR scenes have loaded
             gameObject.SetActive(false);
         }
@@ -52,6 +57,8 @@ namespace UTB.UI
         private void OnDestroy()
         {
             SceneLoadedEvent.Unsubscribe(On_SceneLoaded);
+            MenuOpenedEvent.Unsubscribe(On_MenuOpened);
+            MenuClosedEvent.Unsubscribe(On_MenuClosed);
         }
 
         private void Start()
@@ -195,15 +202,21 @@ namespace UTB.UI
 
         private void On_SwipeEnd(SwipeEndEvent info)
         {
+            bool waiting = m_WaitingForFade || m_WaitingForLoad;
+
+            // We immediately go to swipe processing if we are already swiping
+            if (m_Swiping && !waiting)
+                goto Swipe;
+
             bool isCorrectDirectionSwipe =
                 info.Direction.HasFlag(SwipeDirection.LEFT) ||
                 info.Direction.HasFlag(SwipeDirection.RIGHT);
 
-            bool waiting = m_WaitingForFade || m_WaitingForLoad;
 
-            if (!m_Swiping || !isCorrectDirectionSwipe || waiting)
+            if (!isCorrectDirectionSwipe || waiting)
                 return;
 
+            Swipe:
             m_Swiping = false;
 
             var pos = m_RectTransform.anchoredPosition;
@@ -214,8 +227,8 @@ namespace UTB.UI
             // Takes a value from -1, 0 basically, so we need to clamp it next
             int screenOffsetCount = Mathf.RoundToInt(pos.x / canvasWidth);
 
-            if (screenOffsetCount <= -m_Pages.Length)
-            {
+            if (screenOffsetCount <= -m_Pages.Length) 
+            { 
                 screenOffsetCount = -(m_Pages.Length - 1);
             }
 
@@ -236,7 +249,7 @@ namespace UTB.UI
 
             // NOTE: on complete will activate at a later point
             // probably after the load has been requested
-            LeanTween.move(m_RectTransform, pos, m_SlideDuration)
+            var desc = LeanTween.move(m_RectTransform, pos, m_SlideDuration)
                 .setEase(m_SlideEaseType)
                 .setOnComplete(() =>
                 {
@@ -266,20 +279,19 @@ namespace UTB.UI
         {
             if (info.BuildIndex == SceneConfig.HomeScreen.BuildIndex)
             {
+                m_OnHomeScreen = true;
                 gameObject.SetActive(false);
                 return;
             }
-            
+
+            m_OnHomeScreen = false;
+            m_WaitingForLoad = false;
+
             if (!gameObject.activeSelf)
             {
                 gameObject.SetActive(true);
                 return;
             }
-
-            m_WaitingForLoad = false;
-
-            if (m_CaptureTexture != null)
-                RenderTexture.ReleaseTemporary(m_CaptureTexture);
 
             // Update the scene to whatever was loaded
             for(int i = 0; i < SceneConfig.ARScenes.Count; ++i)
@@ -293,6 +305,18 @@ namespace UTB.UI
             
             if (!m_WaitingForFade)
                 FadeoutPages();
+        }
+
+        private void On_MenuOpened(MenuOpenedEvent info)
+        {
+            if (this.gameObject.activeSelf)
+                this.gameObject.SetActive(false);
+        }
+
+        private void On_MenuClosed(MenuClosedEvent info)
+        {
+            if (!this.gameObject.activeSelf && !m_OnHomeScreen)
+                this.gameObject.SetActive(true);
         }
 
         void AdvanceNextScene()

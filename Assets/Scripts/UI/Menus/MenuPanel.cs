@@ -1,26 +1,39 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
 namespace UTB.UI
 {
-    using System;
-    using System.Collections;
-    using System.Collections.Generic;
-    using UnityEngine;
+    public enum MenuType
+    {
+        NONE = 0,
+        MAIN_MENU,
+        SYSTEM,
+        MAP,
+        ABOUT,
+        COUNT
+    };
+
     public class MenuPanel : MonoBehaviour
     {
         protected MenuManager m_MenuManager;
+        protected MenuType m_Type = MenuType.NONE;
 
         private RectTransform m_RectTransform;
         private bool m_IsOpen = false;
 
-
+        public MenuType MenuType { get { return m_Type; } }
         public float animationTime = 0.5f;
         public LeanTweenType TweenType;
 
         public float OriginalY = 0;
         public float HiddenY = -744;
+
+        public MenuPanel(MenuType type)
+        {
+            m_Type = type;
+        }
 
         protected virtual void Awake()
         {
@@ -29,6 +42,9 @@ namespace UTB.UI
             
             m_IsOpen = false;
             gameObject.SetActive(false);
+            
+            m_MenuManager = MenuManager.Instance;
+            m_MenuManager.RegisterMenu(this);
         }
 
         public void PopIn(Action callback = null)
@@ -76,12 +92,7 @@ namespace UTB.UI
 
         public void CloseMenu()
         {
-            this.PopOut();
-        }
-
-        public void RegisterManager(MenuManager manager)
-        {
-            m_MenuManager = manager;
+            this.m_MenuManager.RequestClose(this);
         }
     }
 
