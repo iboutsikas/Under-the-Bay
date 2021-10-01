@@ -15,5 +15,15 @@ namespace UTB.EventSystem
         {
             public bool StoriesEnabled;
         }
+
+        public class VoiceMixToggledEvent: Event<VoiceMixToggledEvent>
+        {
+            public bool MixEnabled;
+        }
+
+        public class VoiceMixChangedEvent: Event<VoiceMixChangedEvent>
+        {
+            public float Value;
+        }
     }
 }

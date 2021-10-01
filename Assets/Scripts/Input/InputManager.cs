@@ -72,6 +72,8 @@ namespace UTB.Input
 
         private void OnDestroy()
         {
+            if (m_UserControls == null)
+                return;
             m_UserControls.Touch.PrimaryTouch.started -= PrimaryTouch_started;
             m_UserControls.Touch.PrimaryTouch.canceled -= PrimaryTouch_canceled;
         }

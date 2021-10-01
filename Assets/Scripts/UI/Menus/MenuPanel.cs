@@ -10,7 +10,9 @@ namespace UTB.UI
         NONE = 0,
         MAIN_MENU,
         SYSTEM,
-        MAP
+        MAP,
+        ABOUT,
+        COUNT
     };
 
     public class MenuPanel : MonoBehaviour
