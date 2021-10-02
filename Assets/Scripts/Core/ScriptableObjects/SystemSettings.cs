@@ -17,6 +17,9 @@ public class SystemSettings : ScriptableObject, ISerializationCallbackReceiver
     public bool StoriesActive;
     public bool DataStreamActive;
 
+    public bool VoiceMixActive;
+    public float VoiceMixValue;
+
 
     public void OnAfterDeserialize()
     {

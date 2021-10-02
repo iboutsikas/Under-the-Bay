@@ -28,7 +28,9 @@ namespace UTB.Core
 
             StoriesToggledEvent.Subscribe(On_StoriesToggled);
             DataStreamToggledEvent.Subscribe(On_DataToggled);
-        }
+            VoiceMixToggledEvent.Subscribe(On_VoiceMixToggled);
+            VoiceMixChangedEvent.Subscribe(On_VoiceMixChanged);
+        }        
 
         private void OnDisable()
         {
@@ -44,6 +46,16 @@ namespace UTB.Core
         private void On_DataToggled(DataStreamToggledEvent info)
         {
             this.SystemSettings.DataStreamActive = info.StreamEnabled;
+        }
+
+        private void On_VoiceMixToggled(VoiceMixToggledEvent info)
+        {
+            this.SystemSettings.VoiceMixActive = info.MixEnabled;
+        }
+
+        private void On_VoiceMixChanged(VoiceMixChangedEvent info)
+        {
+            this.SystemSettings.VoiceMixValue = info.Value;
         }
     }
 }

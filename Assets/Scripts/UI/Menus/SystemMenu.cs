@@ -73,12 +73,30 @@ namespace UTB.UI
 
         private void On_VoiceMixToggled(bool state)
         {
-            throw new NotImplementedException();
+            VoiceMixSlider.interactable = state;
+
+            VoiceMixToggledEvent evt = new VoiceMixToggledEvent()
+            {
+                MixEnabled = state
+            };
+
+            evt.Fire();
+            
+            // When we enable the toggle, we also want to fire a value changed event
+            // So everyone listens updates to the new value
+            if (state)
+            {
+                On_VoiceSliderChanged(VoiceMixSlider.value);
+            }
         }
 
-        private void On_VoiceSliderChanged(float arg0)
+        private void On_VoiceSliderChanged(float value)
         {
-            throw new NotImplementedException();
+            VoiceMixChangedEvent valueEvt = new VoiceMixChangedEvent()
+            {
+                Value = value
+            };
+            valueEvt.Fire();
         }
 
         private void On_MapButtonPressed()
