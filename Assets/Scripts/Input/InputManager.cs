@@ -41,39 +41,33 @@ namespace UTB.Input
         public override void Awake()
         {
             base.Awake();
-            m_UserControls = new UserControls();
         }
 
         private void OnEnable()
         {
-            m_UserControls.Enable();
-        }
-
-        private void OnDisable()
-        {
-            m_UserControls.Disable();
-        }
-
-        private void Start()
-        {
             if (m_UserControls == null)
                 m_UserControls = new UserControls();
+
+            m_UserControls.Enable();
 
             m_UserControls.Touch.PrimaryTouch.started += PrimaryTouch_started;
             m_UserControls.Touch.PrimaryTouch.canceled += PrimaryTouch_canceled;
 
             m_DeviceOrientation = UnityEngine.Input.deviceOrientation;
-            
+
             OrientationChangedEvent evt = new OrientationChangedEvent();
             evt.OldOrientation = DeviceOrientation.Unknown;
             evt.NewOrientation = m_DeviceOrientation;
             evt.Fire();
         }
 
-        private void OnDestroy()
+        private void OnDisable()
         {
             if (m_UserControls == null)
                 return;
+
+            m_UserControls.Disable();
+
             m_UserControls.Touch.PrimaryTouch.started -= PrimaryTouch_started;
             m_UserControls.Touch.PrimaryTouch.canceled -= PrimaryTouch_canceled;
         }
