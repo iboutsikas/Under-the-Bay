@@ -35,6 +35,7 @@ namespace UTB.Data
 
         [NonSerialized]
         private Station m_CurrentStation;
+
         public Station CurrentStation {
             get { return m_CurrentStation; } 
             private set {
@@ -111,8 +112,11 @@ namespace UTB.Data
             RequestLoadSamplesEvent.Subscribe(On_LoadSamplesRequested);
             SelectActiveSampleEvent.Subscribe(On_SelectActiveSample);
 
-            RequestLoadStationsEvent evt = new RequestLoadStationsEvent();
-            evt.Fire();
+            RequestLoadStationsEvent stationsEvt = new RequestLoadStationsEvent();
+            stationsEvt.Fire();
+
+            RequestLoadSamplesEvent samplesEvt = new RequestLoadSamplesEvent();
+            samplesEvt.Fire();
         }
 
         private void OnDisable()

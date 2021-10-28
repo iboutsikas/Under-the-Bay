@@ -39,6 +39,15 @@ namespace UTB.UI
         public RectTransform Canvas;
         public SceneConfiguration SceneConfig;
 
+        public void Disable()
+        {
+            gameObject.SetActive(false);
+        }
+
+        public void Enable()
+        {
+            gameObject.SetActive(true);
+        }
 
         private void Awake()
         {
@@ -51,7 +60,7 @@ namespace UTB.UI
             MenuClosedEvent.Subscribe(On_MenuClosed);
 
             // We will only be activated once AR scenes have loaded
-            gameObject.SetActive(false);
+            Disable();
         }
 
         private void OnDestroy()
@@ -280,7 +289,7 @@ namespace UTB.UI
             if (info.BuildIndex == SceneConfig.HomeScreen.BuildIndex)
             {
                 m_OnHomeScreen = true;
-                gameObject.SetActive(false);
+                Disable();
                 return;
             }
 
@@ -289,8 +298,7 @@ namespace UTB.UI
 
             if (!gameObject.activeSelf)
             {
-                gameObject.SetActive(true);
-                return;
+                Enable();
             }
 
             // Update the scene to whatever was loaded
@@ -310,13 +318,13 @@ namespace UTB.UI
         private void On_MenuOpened(MenuOpenedEvent info)
         {
             if (this.gameObject.activeSelf)
-                this.gameObject.SetActive(false);
+                Disable();
         }
 
         private void On_MenuClosed(MenuClosedEvent info)
         {
             if (!this.gameObject.activeSelf && !m_OnHomeScreen)
-                this.gameObject.SetActive(true);
+                Enable();
         }
 
         void AdvanceNextScene()

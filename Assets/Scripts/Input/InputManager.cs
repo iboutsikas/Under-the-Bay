@@ -43,6 +43,8 @@ namespace UTB.Input
             base.Awake();
         }
 
+        public Vector2 CursorPosition => m_UserControls.Touch.PrimaryPosition.ReadValue<Vector2>();
+
         private void OnEnable()
         {
             if (m_UserControls == null)
@@ -191,6 +193,7 @@ namespace UTB.Input
             StartTouchEvent evt = new StartTouchEvent();
             evt.Position = currentPosition;
             evt.Time = (float)ctx.time;
+            evt.OverUI = UnityEngine.EventSystems.EventSystem.current.IsPointerOverGameObject();
             evt.Fire();            
         }
 

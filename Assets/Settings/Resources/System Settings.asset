@@ -14,3 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   FromDateSerialized: 
   ToDateSerialized: 
+  StoriesActive: 1
+  DataStreamActive: 1
+  VoiceMixActive: 1
+  VoiceMixValue: 0

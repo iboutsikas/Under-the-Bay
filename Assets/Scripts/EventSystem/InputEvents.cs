@@ -11,6 +11,7 @@ namespace UTB.EventSystem
         {
             public Vector2 Position;
             public float Time;
+            public bool OverUI;
         }
 
         public class EndTouchEvent : Event<EndTouchEvent>

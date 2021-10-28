@@ -19,12 +19,20 @@ namespace UTB.Core
         {
             SystemSettings.FromDate = null;
             SystemSettings.ToDate = null;
+            SystemSettings.DataStreamActive = true;
+            
 
             RequestLoadStationsEvent stationsEvt = new RequestLoadStationsEvent();
             stationsEvt.Fire();
 
             RequestLoadSamplesEvent samplesEvt = new RequestLoadSamplesEvent();
             samplesEvt.Fire();
+
+            DataStreamToggledEvent streamEvt = new DataStreamToggledEvent()
+            {
+                StreamEnabled = true
+            };
+            streamEvt.Fire();
 
             StoriesToggledEvent.Subscribe(On_StoriesToggled);
             DataStreamToggledEvent.Subscribe(On_DataToggled);
@@ -36,6 +44,8 @@ namespace UTB.Core
         {
             StoriesToggledEvent.Unsubscribe(On_StoriesToggled);
             DataStreamToggledEvent.Unsubscribe(On_DataToggled);
+            VoiceMixToggledEvent.Unsubscribe(On_VoiceMixToggled);
+            VoiceMixChangedEvent.Unsubscribe(On_VoiceMixChanged);
         }
 
         private void On_StoriesToggled(StoriesToggledEvent info)
