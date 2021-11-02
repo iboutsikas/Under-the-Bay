@@ -77,7 +77,7 @@ public class ParticleColorTempertatureModifier : DataBasedModifier
         }
     }
 
-    protected override void ApplyDefaultValues()
+    protected override void ApplyDefaultValues(float value)
     {
 
         var startColor = new ParticleSystem.MinMaxGradient(m_DefaultColor);

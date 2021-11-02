@@ -1,5 +1,6 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using FMOD.Studio;
 using UnityEngine;
 using UTB.Data;
 
@@ -23,6 +24,7 @@ public class FMOD_Mixer : DataBasedModifier
         MinPropertyValue = 0.0f;
         NormalRange = new Vector2(0.0f, 1.0f);
         MaxPropertyValue = 10.0f;
+        useNormalRange = false;
     }
 
 
@@ -34,32 +36,10 @@ public class FMOD_Mixer : DataBasedModifier
         backgroundEvent = FMODUnity.RuntimeManager.CreateInstance(NarrationAudioEvent);
         backgroundEvent.start();
 
-
-
-        FMOD.Studio.EventDescription mixerEventDescription;
-        backgroundEvent.getDescription(out mixerEventDescription);
-        FMOD.Studio.PARAMETER_DESCRIPTION mixerParameterDescription;
-        mixerEventDescription.getParameterDescriptionByName("Mixer", out mixerParameterDescription);
+        backgroundEvent.getDescription(out var mixerEventDescription);
+        mixerEventDescription.getParameterDescriptionByName("Mixer", out var mixerParameterDescription);
         MixerID = mixerParameterDescription.id;
 
-    }
-
-    // Update is called once per frame
-    void FixedUpdate()
-    {
-        var data = DataContainer.instance.CurrentSample;
-
-        var value = GetReflectedField<float, BayData, BayDataProperties>(data, DataProperty);
-#if UNITY_EDITOR
-        if (EnableOverride)
-            value = OverrideValue;
-#endif
-
-        float t = (value - MinPropertyValue) / (MaxPropertyValue - MinPropertyValue);
-
-        mixer = Mathf.Lerp(MaxMixerValue, MinMixerValue, t);
-
-        backgroundEvent.setParameterByID(MixerID, mixer);
     }
 
     private void OnDestroy()
@@ -67,13 +47,16 @@ public class FMOD_Mixer : DataBasedModifier
         backgroundEvent.stop(FMOD.Studio.STOP_MODE.ALLOWFADEOUT);
     }
 
-    protected override void ApplyDefaultValues()
+    protected override void ApplyDefaultValues(float value)
     {
-        throw new System.NotImplementedException();
+        // We only set mixer here so we can view it in the inspector
+        mixer = 0;
+        backgroundEvent.setParameterByID(MixerID, mixer);
     }
 
     protected override void ApplyModification(float value, float t)
     {
-        throw new System.NotImplementedException();
+        mixer = Mathf.Lerp(MaxMixerValue, MinMixerValue, t);
+        backgroundEvent.setParameterByID(MixerID, mixer);
     }
 }

@@ -34,7 +34,7 @@ public class TeeteringModifier : DataBasedModifier
         m_DefaultRotation = transform.rotation;
     }
 
-    protected override void ApplyDefaultValues()
+    protected override void ApplyDefaultValues(float value)
     {
         transform.rotation = m_DefaultRotation;
     }

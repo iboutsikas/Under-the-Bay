@@ -33,7 +33,7 @@ public class ParticleCountModifier : DataBasedModifier
         m_DefaultCount = m_ParticleSystem.main.maxParticles;
     }
 
-    protected override void ApplyDefaultValues()
+    protected override void ApplyDefaultValues(float value)
     {
         var main = m_ParticleSystem.main;
         main.maxParticles = m_DefaultCount;

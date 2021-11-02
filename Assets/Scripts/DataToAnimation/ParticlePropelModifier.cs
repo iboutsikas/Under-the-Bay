@@ -32,7 +32,7 @@ public class ParticlePropelModifier : DataBasedModifier
         m_DefaultModifier = m_ParticleSystem.main.simulationSpeed;
     }
     
-    protected override void ApplyDefaultValues()
+    protected override void ApplyDefaultValues(float value)
     {
         var main = m_ParticleSystem.main;
         main.simulationSpeed = m_DefaultModifier;

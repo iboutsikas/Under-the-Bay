@@ -32,7 +32,7 @@ public class ColorTemperatureModifier : DataBasedModifier
         m_DefaultColor = m_Renderer.material.color;
     }
     
-    protected override void ApplyDefaultValues()
+    protected override void ApplyDefaultValues(float value)
     {
         m_Renderer.material.color = m_DefaultColor;
     }

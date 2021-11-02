@@ -35,7 +35,7 @@ public class AnimationSpeedModifier : DataBasedModifier
 
     }
 
-    protected override void ApplyDefaultValues()
+    protected override void ApplyDefaultValues(float value)
     {
         animator.SetFloat(propertyHash, defaultSpeed);
     }

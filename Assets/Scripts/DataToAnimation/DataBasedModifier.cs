@@ -68,7 +68,7 @@ public abstract class DataBasedModifier : MonoBehaviour
             || WithinRange(NormalRange.x, NormalRange.y, value)
         )
         {
-            ApplyDefaultValues();
+            ApplyDefaultValues(value);
             return;
         }
 
@@ -77,7 +77,7 @@ public abstract class DataBasedModifier : MonoBehaviour
         ApplyModification(value, t);
     }
 
-    protected abstract void ApplyDefaultValues();
+    protected abstract void ApplyDefaultValues(float value);
 
     protected abstract void ApplyModification(float value, float t);
 

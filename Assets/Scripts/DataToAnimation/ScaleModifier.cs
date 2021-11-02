@@ -21,7 +21,7 @@ public class ScaleModifier : DataBasedModifier
         m_DefaultScale = transform.localScale;
     }
 
-    protected override void ApplyDefaultValues()
+    protected override void ApplyDefaultValues(float value)
     {
         transform.localScale = m_DefaultScale;
     }
