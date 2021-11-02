@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using static UTB.EventSystem.StateEvents;
+using Random = UnityEngine.Random;
 
 namespace UTB.UI
 {
@@ -14,6 +15,7 @@ namespace UTB.UI
         public Toggle VoiceMixToggle;
         public Slider VoiceMixSlider;
         public Button MapButton;
+        public Button TimeButton;
         public Button InfoButton;
 
         public SystemMenu()
@@ -40,6 +42,9 @@ namespace UTB.UI
 
             Debug.Assert(MapButton != null);
             MapButton.onClick.AddListener(On_MapButtonPressed);
+
+            Debug.Assert(TimeButton != null);
+            TimeButton.onClick.AddListener(On_TimeButtonPressed);
 
             Debug.Assert(InfoButton != null);
             InfoButton.onClick.AddListener(On_InfoButtonPressed);
@@ -103,6 +108,23 @@ namespace UTB.UI
         {
             m_MenuManager.RequestOpen(MenuType.MAP);
         }
+
+        private void On_TimeButtonPressed()
+        {
+            var isSpinner = Random.Range(0, 1.1f) >= 0.5f;
+            Debug.Log($"[IsSpinner] {isSpinner}");
+            var opts = new NativeDialogs.DatePickerOptions()
+            {
+                Callback = offset =>
+                {
+                    Debug.Log($"The new date is {offset}");
+                },
+                Spinner = isSpinner
+            };
+
+            NativeDialogs.DatePicker(opts);
+        }
+
 
         private void On_InfoButtonPressed()
         {
