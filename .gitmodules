@@ -1,0 +1,3 @@
+[submodule "Assets/Plugins/NativeDialogs"]
+	path = Assets/Plugins/NativeDialogs
+	url = git@github.com:iboutsikas/native-dialogs.git
