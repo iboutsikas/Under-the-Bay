@@ -37,8 +37,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 0, y: -50}
-  m_SizeDelta: {x: 0, y: -100}
+  m_AnchoredPosition: {x: 0, y: 0}
+  m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &2461922593227205096
 CanvasRenderer:
@@ -1466,8 +1466,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 0, y: 0}
-  m_AnchoredPosition: {x: 512, y: 0}
-  m_SizeDelta: {x: 1024, y: 0}
+  m_AnchoredPosition: {x: 346.1329, y: 0}
+  m_SizeDelta: {x: 692.2658, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &2461922594124891018
 MonoBehaviour:
@@ -2800,6 +2800,18 @@ PrefabInstance:
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_CallState
       value: 2
       objectReference: {fileID: 0}
+    - target: {fileID: 448765742194614850, guid: e282888f52d306f43b413c15cb0933a5, type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_MethodName
+      value: SelectDate
+      objectReference: {fileID: 0}
+    - target: {fileID: 448765742194614850, guid: e282888f52d306f43b413c15cb0933a5, type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_TargetAssemblyTypeName
+      value: NativeDialogs, Assembly-CSharp-firstpass
+      objectReference: {fileID: 0}
+    - target: {fileID: 448765742194614850, guid: e282888f52d306f43b413c15cb0933a5, type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Arguments.m_ObjectArgumentAssemblyTypeName
+      value: UnityEngine.Object, UnityEngine
+      objectReference: {fileID: 0}
     - target: {fileID: 1766136703731621503, guid: e282888f52d306f43b413c15cb0933a5, type: 3}
       propertyPath: m_Name
       value: Back in Time
@@ -2992,7 +3004,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3731557740641363850, guid: e282888f52d306f43b413c15cb0933a5, type: 3}
       propertyPath: m_fontSize
-      value: 17.15
+      value: 16.55
       objectReference: {fileID: 0}
     - target: {fileID: 3731557740641363850, guid: e282888f52d306f43b413c15cb0933a5, type: 3}
       propertyPath: m_margin.z
