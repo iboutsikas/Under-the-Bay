@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using NativeDialogs;
 using UnityEngine;
 using UnityEngine.UI;
 using static UTB.EventSystem.StateEvents;
@@ -52,7 +53,10 @@ namespace UTB.UI
             StoriesToggledEvent.Subscribe(On_StoriesToggled);
             DataStreamToggledEvent.Subscribe(On_DataToggled);
         }
-                
+
+        private void Start()
+        {
+        }
 
         private void OnDestroy()
         {
@@ -111,18 +115,16 @@ namespace UTB.UI
 
         private void On_TimeButtonPressed()
         {
-            var isSpinner = Random.Range(0, 1.1f) >= 0.5f;
-            Debug.Log($"[IsSpinner] {isSpinner}");
-            var opts = new NativeDialogs.DatePickerOptions()
+            var opts = new DatePickerOptions()
             {
                 Callback = offset =>
                 {
                     Debug.Log($"The new date is {offset}");
                 },
-                Spinner = isSpinner
+                Spinner = true
             };
 
-            NativeDialogs.DatePicker(opts);
+            NativeDatePicker.ShowModalDatepicker(opts);
         }
 
 
